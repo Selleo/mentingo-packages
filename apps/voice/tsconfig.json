@@ -1,0 +1,8 @@
+{
+  "extends": "@mentingo/typescript-config/react-library.json",
+  "compilerOptions": {
+    "types": ["vitest/globals"]
+  },
+  "include": ["src", "tsup.config.ts", "vitest.config.ts", "vitest.setup.ts"],
+  "exclude": ["src/worklets/pcm-vad-processor.ts"]
+}

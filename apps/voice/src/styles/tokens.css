@@ -1,0 +1,41 @@
+/*
+ * Default Mentingo theme tokens consumed by the Tailwind preset and components.
+ * Optional: skip this file if your app already defines these variables (Mentingo core does).
+ * Uses :where() so any of your own :root declarations win.
+ */
+:where(:root) {
+  --neutral-50: #f7f7f7;
+  --neutral-100: #ededed;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #c8c8c8;
+  --neutral-400: #adadad;
+  --neutral-500: #999999;
+  --neutral-600: #888888;
+  --neutral-700: #7b7b7b;
+  --neutral-800: #676767;
+  --neutral-900: #545454;
+  --neutral-950: #363636;
+
+  --primary-50: #f2f5fc;
+  --primary-100: #e1eaf8;
+  --primary-200: #cadaf3;
+  --primary-300: #a6c3ea;
+  --primary-400: #7ca3de;
+  --primary-500: #5d84d4;
+  --primary-600: #4f6fc9;
+  --primary-700: #3f58b6;
+  --primary-800: #384995;
+  --primary-900: #342076;
+  --primary-950: #222949;
+
+  --primary: var(--primary-700);
+  --primary-foreground: var(--primary-50);
+  --contrast: #fcfcfc;
+  --background: #fcfcfc;
+  --foreground: #121521;
+  --accent: var(--primary-100);
+  --accent-foreground: var(--primary-800);
+  --destructive: #fb3b40;
+  --input: var(--neutral-300);
+  --ring: var(--neutral-900);
+}
