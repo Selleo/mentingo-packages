@@ -3,7 +3,6 @@ import { useEffect, useLayoutEffect, useRef, useState, type RefCallback } from "
 /** Mentingo `--primary-700`, used when no `--primary` token is defined. */
 const MENTINGO_PRIMARY_FALLBACK = "#3f58b6";
 
-/** Visualizers follow the Mentingo `--primary` token by default. */
 export const DEFAULT_VISUALIZER_COLOR = `var(--primary, ${MENTINGO_PRIMARY_FALLBACK})`;
 
 const HEX_COLOR_PATTERN = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/;
@@ -54,10 +53,6 @@ const resolveCssColor = (color: string, element: Element): string => {
   return MENTINGO_PRIMARY_FALLBACK;
 };
 
-/**
- * Converts a hex/rgb color or `var(--token)` to normalized RGB for the shaders.
- * CSS variables resolve against `element` (so scoped themes work), or the document root.
- */
 export const colorToRgb = (color = DEFAULT_VISUALIZER_COLOR, element?: Element | null) => {
   const resolvedColor =
     typeof window === "undefined"
@@ -82,10 +77,6 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : us
 
 const isSameColor = (a: number[], b: number[]) => a.every((channel, index) => channel === b[index]);
 
-/**
- * Resolves `color` against the rendered element so tokens defined on a wrapper (not only `:root`)
- * are honored. Returns a ref for the element (merged with `forwardedRef`) and the RGB triple.
- */
 export function useVisualizerColor(color: string, forwardedRef?: unknown) {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [rgbColor, setRgbColor] = useState(() =>
