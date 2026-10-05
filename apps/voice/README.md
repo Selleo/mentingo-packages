@@ -1,6 +1,6 @@
 # @mentingo/voice
 
-Browser building blocks for the Mentingo voice mentor. Requires React 18 or newer and `motion` 12.
+Browser building blocks for the Mentingo voice mentor. Requires React 18 or newer.
 The package contains microphone capture with Silero VAD, streamed PCM playback for mentor speech,
 turn state, and the React session UI. It does not connect to Mentingo or Luma; the application
 owns the socket connection and forwards audio and events between the package and the server.
@@ -10,7 +10,7 @@ owns the socket connection and forwards audio and events between the package and
 Install from npmjs.com:
 
 ```sh
-pnpm add @mentingo/voice motion
+pnpm add @mentingo/voice
 ```
 
 ## Usage
