@@ -10,7 +10,7 @@ owns the socket connection and forwards audio and events between the package and
 Install from npmjs.com:
 
 ```sh
-pnpm add @mentingo/voice
+pnpm add @mentingo/voice@0.1.0
 ```
 
 ## Usage
@@ -186,7 +186,9 @@ pnpm --filter @mentingo/voice build
 
 ## Release preparation
 
-From this package directory:
+Versions and changelogs are managed with Changesets from the repository root; see
+[Releasing](../../README.md#releasing). To review the tarball before a release, from this package
+directory:
 
 ```sh
 pnpm pack --pack-destination /tmp/mentingo-voice-release
@@ -194,15 +196,6 @@ pnpm pack --pack-destination /tmp/mentingo-voice-release
 
 The `prepack` hook checks types, runs the tests and builds before packing or publishing. The
 tarball includes only `dist`, this README, the MIT license and package metadata.
-
-Publishing targets npmjs.com with public access. The publisher needs permission for the
-`@mentingo` npm scope. From this directory, after reviewing the tarball:
-
-```sh
-pnpm publish --access public
-```
-
-Published versions cannot be reused; increment the version for subsequent releases.
 
 ## License
 

@@ -1,5 +1,3 @@
-import type { Config } from "tailwindcss";
-
 const scale = (name: string) =>
   Object.fromEntries(
     [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((step) => [
@@ -34,6 +32,6 @@ const voicePreset = {
       },
     },
   },
-} satisfies Config;
+};
 
 export default voicePreset;

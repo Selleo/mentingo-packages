@@ -39,6 +39,7 @@ Create `apps/<name>` with a `package.json` that:
 - declares entry points in `exports` with types,
 - defines `build`, `typecheck` and `test` scripts so Turborepo and CI pick them up,
 - runs `typecheck`, `test` and `build` in a `prepack` script,
+- pins `devDependencies` to exact versions and uses compatible ranges for runtime `dependencies`,
 - keeps React and other singletons in `peerDependencies`.
 
 Extend `@mentingo/typescript-config/react-library.json` (or `base.json` without React), add a
@@ -46,10 +47,29 @@ Extend `@mentingo/typescript-config/react-library.json` (or `base.json` without 
 
 ## Releasing
 
-Each package documents its release steps in its own README. In short: bump the version, run
-`pnpm pack` from the package directory, review the tarball, then `pnpm publish --access public`.
-The publisher needs permission for the `@mentingo` npm scope, and published versions cannot be
-reused.
+Versions are managed with [Changesets](https://github.com/changesets/changesets). Every pull
+request that changes a published package adds a changeset with `pnpm changeset`, naming the package,
+the bump (`patch`, `minor` or `major`) and a summary for the changelog. Changes that need no release
+add one with `pnpm changeset add --empty`. CI fails on pull requests without a changeset.
+
+To release from an up-to-date `main`:
+
+```sh
+pnpm version-packages
+```
+
+This applies pending changesets, bumps package versions and writes each `CHANGELOG.md`. Update the
+versioned install command in the package README, then merge the result through a pull request
+titled `chore: release packages`. From `main` after the merge:
+
+```sh
+pnpm release
+git push origin --tags
+```
+
+`pnpm release` publishes every package version that is not on npm yet, running each package's
+`prepack` checks, and tags the commit as `@mentingo/<name>@<version>`. The publisher needs
+permission for the `@mentingo` npm scope, and published versions cannot be reused.
 
 ## Contributing
 
