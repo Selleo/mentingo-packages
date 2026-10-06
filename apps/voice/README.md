@@ -1,53 +1,19 @@
 # @mentingo/voice
 
-Transport-agnostic building blocks for Mentingo's voice mentor: microphone capture with Silero VAD,
-streamed PCM playback with turn handling and word highlighting, and the React session UI.
+Browser building blocks for the Mentingo voice mentor. Requires React 18 or newer.
+The package contains microphone capture with Silero VAD, streamed PCM playback for mentor speech,
+turn state, and the React session UI. It does not connect to Mentingo or Luma; the application
+owns the socket connection and forwards audio and events between the package and the server.
 
-The package does **not** talk to any API. You wire its callbacks to whatever transport you use
-(Socket.IO, WebSocket, WebRTC, a mock for a landing page demo, …).
+## Installation
 
-## Install
+Install from npmjs.com:
 
-```bash
-pnpm add @mentingo/voice motion react react-dom
+```sh
+pnpm add @mentingo/voice@0.1.0
 ```
 
-## Styling
-
-Components are written with Tailwind utility classes and Mentingo CSS variables, like Mentingo core.
-
-```ts
-// tailwind.config.ts
-import voicePreset from "@mentingo/voice/tailwind-preset";
-
-export default {
-  presets: [voicePreset],
-  content: ["./src/**/*.{ts,tsx}", "./node_modules/@mentingo/voice/dist/**/*.js"],
-};
-```
-
-```ts
-import "@mentingo/voice/tokens.css"; // optional: default Mentingo colors (skip if you define --primary-* etc.)
-import "@mentingo/voice/styles.css"; // required: transcript animation keyframes
-```
-
-Variables used: `--primary-50…950`, `--primary`, `--primary-foreground`, `--neutral-50…950`,
-`--contrast`, `--background`, `--foreground`, `--accent`, `--accent-foreground`, `--destructive`,
-`--input`, `--ring`.
-
-## What's inside
-
-| Layer            | Exports                                                                                                                                                                                                                                                         |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Engine (`/core`) | `VoiceCapture`, `MentorSpeechController`, `RealtimePCMPlayer`, VAD end deferral, turn state, alignment helpers, PCM utils, `createPcmVadWorkletNode`, constants (`VOICE_MODE_STATE`, `VOICE_CONNECTION_STATE`, …)                                               |
-| React hooks      | `useVoiceCapture`, `useMentorSpeech`, `useVoiceModeState`                                                                                                                                                                                                       |
-| Session blocks   | `VoiceMentorModeOverlay` (full screen) or compose your own from `VoiceSessionStateTitle`, `VoiceSessionVisualizer`, `VoiceConversationTranscript`, `VoiceSessionControls`, `VoiceSessionMobileControls`, `VoiceSessionTaskPanel`, `VoiceSessionConnectionAlert` |
-| Visualizers      | `AgentAudioVisualizerAura`, `AgentAudioVisualizerWave`, `ReactShaderToy`, `VoiceLevelBars`                                                                                                                                                                      |
-| Worklet          | `@mentingo/voice/worklets/pcm-vad-processor.js`: lightweight energy-based speech gate (alternative to Silero)                                                                                                                                                   |
-
-`@mentingo/voice/core` has no React dependency.
-
-## Building a voice session
+## Usage
 
 ```tsx
 import {
@@ -56,101 +22,182 @@ import {
   useMentorSpeech,
   useVoiceCapture,
   useVoiceModeState,
-  type LearnerTranscriptRevision,
 } from "@mentingo/voice";
 
-function VoiceSession({ transport }: { transport: MyTransport }) {
-  const mode = useVoiceModeState();
-  const [transcript, setTranscript] = useState<LearnerTranscriptRevision | null>(null);
-  const [response, setResponse] = useState("");
+const mode = useVoiceModeState();
 
-  const mentor = useMentorSpeech({
-    onTurnStarted: mode.onAudioPlaybackStarted,
-    onTurnCompleted: () => mode.onAudioOutputCompleted(capture.isActive),
-    onInterrupted: () => mode.onAudioInterrupted(capture.isActive),
-  });
+const mentor = useMentorSpeech({
+  onTurnStarted: mode.onAudioPlaybackStarted,
+  onTurnCompleted: () => mode.onAudioOutputCompleted(true),
+  onInterrupted: () => mode.onAudioInterrupted(true),
+});
 
-  const capture = useVoiceCapture({
-    onChunk: (pcm, meta) => {
-      mentor.interrupt(); // learner barge-in
-      mode.onUserSpeechChunkSent();
-      transport.sendAudio(pcm, meta);
-    },
-    onSpeechStart: (boundary) => transport.sendSpeechStart(boundary),
-    onSpeechEnd: (boundary) => transport.sendSpeechEnd(boundary),
-  });
+const capture = useVoiceCapture({
+  onChunk: (chunk, meta) => {
+    mentor.interrupt();
+    mode.onUserSpeechChunkSent();
+    socket.emit("audioChunk", meta, chunk);
+  },
+  onSpeechStart: (boundary) => socket.emit("clientSpeechStart", boundary),
+  onSpeechEnd: (boundary) => socket.emit("clientSpeechEnd", boundary),
+});
 
-  useEffect(
-    () =>
-      transport.subscribe({
-        mentorAudio: (chunk) => mentor.pushAudio(chunk), // { turnId, seq, audio: base64 | bytes }
-        mentorAlignment: mentor.pushAlignment,
-        mentorAudioCompleted: mentor.completeTurn,
-        mentorInterrupted: mentor.handleInterrupted,
-        mentorText: setResponse,
-        learnerTranscript: (revision) => {
-          setTranscript(revision);
-          mode.onLearnerTranscriptionReceived();
-          if (revision.status === "final") capture.closeTurn();
-        },
-      }),
-    [transport],
-  );
+socket.on("audioSpeech", ({ turnId, seq, chunkBase64 }) =>
+  mentor.pushAudio({ turnId, seq, audio: chunkBase64 }),
+);
+socket.on("audioOutputAlignment", mentor.pushAlignment);
+socket.on("audioOutputCompleted", ({ turnId }) => mentor.completeTurn(turnId));
+socket.on("audioInterrupted", ({ turnId }) => mentor.handleInterrupted(turnId));
 
-  const start = async () => {
-    await mentor.start(); // inside the click handler: unlocks audio playback
-    await capture.start({ keepTurnOpen: true });
-    mode.onMicCaptureStarted();
-  };
-
-  return (
-    <VoiceMentorModeOverlay
-      open={capture.isActive}
-      state={mode.voiceModeState}
-      voiceLevel={capture.level}
-      mentorVoiceLevel={mentor.level}
-      learnerTranscript={transcript}
-      response={response}
-      mentorSpeech={mentor.presentation}
-      mentorName="Mentor"
-      learnerName="You"
-      isMicMuted={capture.isMuted}
-      connectionState={VOICE_CONNECTION_STATE.CONNECTED}
-      onMicMutedChange={capture.setMuted}
-      onRestart={start}
-      onExit={async () => {
-        await capture.stop();
-        mentor.reset();
-        mode.onMicCaptureStopped();
-      }}
-    />
-  );
+async function startSession() {
+  await mentor.start();
+  await capture.start({ keepTurnOpen: true });
+  mode.onMicCaptureStarted();
 }
+
+<VoiceMentorModeOverlay
+  open={capture.isActive}
+  state={mode.voiceModeState}
+  voiceLevel={capture.level}
+  mentorVoiceLevel={mentor.level}
+  learnerTranscript={learnerTranscript}
+  response={mentorResponse}
+  mentorSpeech={mentor.presentation}
+  mentorName="AI Mentor"
+  learnerName={user.name}
+  isMicMuted={capture.isMuted}
+  connectionState={VOICE_CONNECTION_STATE.CONNECTED}
+  onMicMutedChange={capture.setMuted}
+  onRestart={startSession}
+  onExit={capture.stop}
+/>;
 ```
 
-### Endpointing modes
+Event names in the example are illustrative; use the ones of your server.
 
-- `client` (default): Silero VAD runs in the browser. Only speech is emitted, with
-  `onSpeechStart`/`onSpeechEnd` boundaries and pre-speech padding. `keepTurnOpen` keeps one learner
-  turn across pauses until `closeTurn()`.
-- `provider`: continuous 16 kHz PCM is emitted and the speech provider detects boundaries.
+Call `mentor.start()` from a user gesture so the browser allows audio playback. Capture emits
+16 kHz mono PCM s16le chunks with increasing sequence numbers. With client endpointing (default),
+Silero VAD runs in the browser and only speech is emitted, together with speech start and end
+boundaries. With `endpointingMode: "provider"` audio is streamed continuously and the server
+detects boundaries. `keepTurnOpen` keeps one learner turn open across pauses until `closeTurn()`
+is called, typically when the final transcript arrives.
 
-Silero model and onnxruntime wasm load from jsDelivr by default. Self-host them with
-`vadAssetBasePath` / `onnxWasmBasePath`.
+`mentor.pushAudio` accepts PCM s16le bytes or base64. Chunks from another turn or with an old
+sequence number are dropped. A turn completes when the server reports completion and playback
+has drained, or after 5 seconds without new audio. `mentor.interrupt()` stops playback when the
+learner starts speaking.
 
-### Localization and testing
+The Silero model and onnxruntime wasm are loaded from jsDelivr when capture starts. Set
+`vadAssetBasePath` and `onnxWasmBasePath` to serve them from your own host.
 
-Every visible string comes from `labels` (`VoiceSessionLabelsInput`). English defaults are in
-`DEFAULT_VOICE_SESSION_LABELS`. `data-testid`s are exported as `VOICE_SESSION_TEST_IDS`.
+## Styling
+
+Components use Tailwind utility classes and Mentingo CSS variables (`--primary-50` to
+`--primary-950`, `--primary`, `--neutral-50` to `--neutral-950`, `--contrast`, `--background`,
+`--accent`, `--destructive`, `--input`, `--ring`). Mentingo core defines these already.
+
+Tailwind 3:
+
+```ts
+import voicePreset from "@mentingo/voice/tailwind-preset";
+
+export default {
+  presets: [voicePreset],
+  content: ["./src/**/*.{ts,tsx}", "./node_modules/@mentingo/voice/dist/**/*.js"],
+};
+```
+
+Tailwind 4: add `@source "../node_modules/@mentingo/voice/dist";` and map the same colors in
+`@theme`.
+
+Import `@mentingo/voice/styles.css` for the transcript animation. `@mentingo/voice/tokens.css`
+provides the default Mentingo palette for apps that do not define the variables. Visualizers read
+`--primary` from the element they render in, so a theme can be scoped to a wrapper element.
+
+## API
+
+### `VoiceCapture` / `useVoiceCapture(options)`
+
+Options:
+
+- `sampleRate?: number` - output sample rate, default `16000`.
+- `chunkMs?: number` - chunk duration, default `32`.
+- `vad?: Partial<SileroVadOptions>` - Silero thresholds and timings.
+- `vadAssetBasePath?: string`, `onnxWasmBasePath?: string` - model and wasm locations.
+- `audioConstraints?: MediaTrackConstraints`
+- `onChunk(chunk, meta)`, `onSpeechStart(boundary)`, `onSpeechEnd(boundary)`, `onLevelChange(level)`
+
+Methods: `start({ endpointingMode?, keepTurnOpen?, firstChunkSeq? })`, `stop()`,
+`setMuted(muted)`, `closeTurn()`. The hook also returns `isActive`, `isStarting`, `isMuted` and
+`level`.
+
+### `MentorSpeechController` / `useMentorSpeech(options)`
+
+Options:
+
+- `sampleRate?: number` - mentor audio sample rate, default `44100`.
+- `channels?: number` - default `1`.
+- `inactivityTimeoutMs?: number` - default `5000`.
+- `onTurnStarted(turnId)`, `onTurnCompleted(turnId)`, `onInterrupted()`, `onLevelChange(level)`,
+  `onPresentationChange(presentation)`
+
+Methods: `start()`, `pushAudio({ turnId, seq, audio })`, `pushAlignment(alignment)`,
+`completeTurn(turnId?)`, `handleInterrupted(turnId?)`, `interrupt()`, `reset()`. The hook also
+returns `level` and `presentation` (word timings with the active word index).
+
+### `useVoiceModeState()`
+
+Returns `voiceModeState` (`idle`, `listening`, `thinking`, `speaking`) and the event handlers
+`onMicCaptureStarted`, `onMicCaptureStopped`, `onUserSpeechChunkSent`,
+`onLearnerTranscriptionReceived`, `onAudioPlaybackStarted`, `onAudioOutputCompleted` and
+`onAudioInterrupted`.
+
+### Components
+
+- `VoiceMentorModeOverlay` - full-screen session. The Check button renders with `onJudge`, the task
+  panel with `taskContent`.
+- `VoiceSessionStateTitle`, `VoiceSessionVisualizer`, `VoiceConversationTranscript`,
+  `VoiceSessionControls`, `VoiceSessionMobileControls`, `VoiceSessionTaskPanel`,
+  `VoiceSessionConnectionAlert` - the blocks the overlay is built from.
+- `AgentAudioVisualizerAura`, `AgentAudioVisualizerWave`, `VoiceLevelBars` - visualizers.
+
+All visible text comes from the `labels` prop; English defaults are exported as
+`DEFAULT_VOICE_SESSION_LABELS`. Test ids are exported as `VOICE_SESSION_TEST_IDS`.
+
+## Public Exports
+
+- `@mentingo/voice` - everything below plus React hooks and components.
+- `@mentingo/voice/core` - capture, playback, turn state and helpers without React.
+- `@mentingo/voice/tailwind-preset` - Tailwind 3 preset.
+- `@mentingo/voice/styles.css`, `@mentingo/voice/tokens.css`
+- `@mentingo/voice/worklets/pcm-vad-processor.js` - energy-based AudioWorklet speech gate, loaded
+  with `createPcmVadWorkletNode`.
 
 ## Development
 
-```bash
-pnpm --filter @mentingo/voice test
+From the repository root:
+
+```sh
+pnpm install
 pnpm --filter @mentingo/voice typecheck
+pnpm --filter @mentingo/voice test
 pnpm --filter @mentingo/voice build
 ```
 
-The aura/wave visualizers and `ReactShaderToy` are adapted from LiveKit's
-[agents-ui](https://github.com/livekit/components-js) (Apache-2.0), with the LiveKit track
-dependency removed. They are driven by a plain `volume` prop.
+## Release preparation
+
+Versions and changelogs are managed with Changesets from the repository root; see
+[Releasing](../../README.md#releasing). To review the tarball before a release, from this package
+directory:
+
+```sh
+pnpm pack --pack-destination /tmp/mentingo-voice-release
+```
+
+The `prepack` hook checks types, runs the tests and builds before packing or publishing. The
+tarball includes only `dist`, this README, the MIT license and package metadata.
+
+## License
+
+MIT. See [LICENSE](./LICENSE). The aura and wave visualizers are adapted from LiveKit
+[agents-ui](https://github.com/livekit/components-js) (Apache-2.0).

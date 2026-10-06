@@ -7,7 +7,7 @@ const shared: Options = {
   dts: true,
   sourcemap: true,
   target: "es2022",
-  external: ["react", "react-dom", "motion", "tailwindcss"],
+  external: ["react", "react-dom", "motion"],
 };
 
 export default defineConfig([
