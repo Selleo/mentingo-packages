@@ -42,3 +42,23 @@
     -webkit-text-fill-color: var(--neutral-900);
   }
 }
+
+@keyframes voice-judge-progress {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(310%);
+  }
+}
+
+.voice-judge-progress {
+  animation: voice-judge-progress 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-judge-progress {
+    width: 100%;
+    animation: none;
+  }
+}

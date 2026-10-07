@@ -152,3 +152,31 @@ describe("VoiceMentorModeOverlay", () => {
     expect(screen.getByTestId(VOICE_SESSION_TEST_IDS.EXIT_BUTTON)).toHaveTextContent("Leave");
   });
 });
+
+describe("VoiceMentorModeOverlay notice", () => {
+  it("shows a notice above the conversation when provided", () => {
+    render(
+      <VoiceMentorModeOverlay
+        open
+        state={VOICE_MODE_STATE.IDLE}
+        voiceLevel={0}
+        mentorVoiceLevel={0}
+        learnerTranscript={null}
+        response=""
+        mentorSpeech={null}
+        mentorName="Mentor"
+        learnerName="Visitor"
+        isMicMuted={false}
+        connectionState={VOICE_CONNECTION_STATE.CONNECTED}
+        onMicMutedChange={vi.fn()}
+        onRestart={vi.fn()}
+        onExit={vi.fn()}
+        notice="The mentor couldn't respond."
+      />,
+    );
+
+    expect(screen.getByTestId(VOICE_SESSION_TEST_IDS.NOTICE)).toHaveTextContent(
+      "The mentor couldn't respond.",
+    );
+  });
+});

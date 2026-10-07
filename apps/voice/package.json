@@ -49,6 +49,7 @@
     "prepack": "pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@ricky0123/vad-web": "0.0.30",
     "class-variance-authority": "^0.7.0",
