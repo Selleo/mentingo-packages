@@ -3,7 +3,13 @@ import { Buffer } from "node:buffer";
 import { createServer } from "node:http";
 import { test } from "node:test";
 
-import { AiModelDomain, createLumaClient, LUMA_AI_MODEL_DOMAINS } from "../dist/index.js";
+import {
+  AiModelDomain,
+  AiModelProfileKind,
+  createLumaClient,
+  LUMA_AI_MODEL_DOMAINS,
+  LUMA_AI_MODEL_PROFILE_KINDS,
+} from "../dist/index.js";
 
 const ORGANIZATION_ID = "organization-123";
 const API_KEY_ID = "api-key-123";
@@ -332,5 +338,13 @@ test("the API can reject an admin key used for feature actions", async () => {
       assert.equal(requests[0].headers["x-api-key"], "admin-secret");
     },
     401,
+  );
+});
+
+test("admin model profile kinds include image generation and match the generated enum", () => {
+  assert.equal(LUMA_AI_MODEL_PROFILE_KINDS.IMAGE, "image");
+  assert.deepEqual(
+    Object.values(LUMA_AI_MODEL_PROFILE_KINDS).sort(),
+    Object.values(AiModelProfileKind).sort(),
   );
 });

@@ -67,6 +67,8 @@ void client.authoring.subscribeEvents({
   },
 });
 void snapshotPromise.then((snapshot) => {
+  // @ts-expect-error Session accounting is private and absent from the public contract.
+  void snapshot.usage;
   const firstPart = snapshot.turns?.[0]?.parts[0];
   const partKind: "text" | "tool" | "proposal" | "question" | undefined = firstPart?.partKind;
   const toolSourceCount: number | null | undefined = firstPart?.tool?.result?.sourceCount;

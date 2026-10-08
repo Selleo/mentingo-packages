@@ -20,6 +20,7 @@ export type LumaAiModelDomain = (typeof LUMA_AI_MODEL_DOMAINS)[keyof typeof LUMA
 
 export const LUMA_AI_MODEL_PROFILE_KINDS = {
   CHAT: AiModelProfileKind.Chat,
+  IMAGE: AiModelProfileKind.Image,
   EMBEDDING: AiModelProfileKind.Embedding,
   SPEECH_TO_TEXT: AiModelProfileKind.SpeechToText,
   TEXT_TO_SPEECH: AiModelProfileKind.TextToSpeech,

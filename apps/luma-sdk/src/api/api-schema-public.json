@@ -696,7 +696,7 @@
           "Public - Require API Key"
         ],
         "summary": "Get Session",
-        "description": "Return the authorized durable workspace snapshot, including task and usage state.",
+        "description": "Return the authorized durable workspace snapshot, including task state.",
         "operationId": "get_session_api_public_v1_authoring_sessions__session_id__get",
         "security": [
           {
@@ -2809,6 +2809,7 @@
         "type": "string",
         "enum": [
           "chat",
+          "image",
           "embedding",
           "speechToText",
           "textToSpeech"
@@ -3056,19 +3057,6 @@
             ],
             "title": "Speechtotextapikey",
             "description": "ElevenLabs Scribe speech-to-text API key used for voice mentor transcription."
-          },
-          "napkinApiKey": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 1024,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Napkinapikey"
           },
           "textToSpeechApiKey": {
             "anyOf": [
@@ -6453,107 +6441,6 @@
         "title": "ScaleOption",
         "description": "Represent one ordered five-point scale value and its label."
       },
-      "ScopedUsageTotals": {
-        "properties": {
-          "invocationCount": {
-            "type": "integer",
-            "title": "Invocationcount"
-          },
-          "pendingInvocationCount": {
-            "type": "integer",
-            "title": "Pendinginvocationcount"
-          },
-          "cancelledInvocationCount": {
-            "type": "integer",
-            "title": "Cancelledinvocationcount"
-          },
-          "obsoleteInvocationCount": {
-            "type": "integer",
-            "title": "Obsoleteinvocationcount"
-          },
-          "unknownTokenInvocationCount": {
-            "type": "integer",
-            "title": "Unknowntokeninvocationcount"
-          },
-          "unknownCostInvocationCount": {
-            "type": "integer",
-            "title": "Unknowncostinvocationcount"
-          },
-          "reportedCostInvocationCount": {
-            "type": "integer",
-            "title": "Reportedcostinvocationcount"
-          },
-          "estimatedCostInvocationCount": {
-            "type": "integer",
-            "title": "Estimatedcostinvocationcount"
-          },
-          "configurationEstimateInvocationCount": {
-            "type": "integer",
-            "title": "Configurationestimateinvocationcount"
-          },
-          "inputTokens": {
-            "type": "integer",
-            "title": "Inputtokens"
-          },
-          "outputTokens": {
-            "type": "integer",
-            "title": "Outputtokens"
-          },
-          "cachedInputTokens": {
-            "type": "integer",
-            "title": "Cachedinputtokens"
-          },
-          "reportedUsd": {
-            "type": "string",
-            "title": "Reportedusd"
-          },
-          "estimatedUsd": {
-            "type": "string",
-            "title": "Estimatedusd"
-          },
-          "knownUsd": {
-            "type": "string",
-            "title": "Knownusd"
-          },
-          "tokensComplete": {
-            "type": "boolean",
-            "title": "Tokenscomplete"
-          },
-          "costComplete": {
-            "type": "boolean",
-            "title": "Costcomplete"
-          },
-          "scopeId": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Scopeid"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "invocationCount",
-          "pendingInvocationCount",
-          "cancelledInvocationCount",
-          "obsoleteInvocationCount",
-          "unknownTokenInvocationCount",
-          "unknownCostInvocationCount",
-          "reportedCostInvocationCount",
-          "estimatedCostInvocationCount",
-          "configurationEstimateInvocationCount",
-          "inputTokens",
-          "outputTokens",
-          "cachedInputTokens",
-          "reportedUsd",
-          "estimatedUsd",
-          "knownUsd",
-          "tokensComplete",
-          "costComplete",
-          "scopeId"
-        ],
-        "title": "ScopedUsageTotals",
-        "description": "Attach usage totals to one task, request, or API-key scope."
-      },
       "SelectedChapterContext": {
         "properties": {
           "id": {
@@ -6731,9 +6618,6 @@
       },
       "SessionSnapshot": {
         "properties": {
-          "usage": {
-            "$ref": "#/components/schemas/UsageReport"
-          },
           "reasoningControlAvailable": {
             "type": "boolean",
             "title": "Reasoningcontrolavailable",
@@ -6828,7 +6712,6 @@
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "usage",
           "sessionId",
           "courseId",
           "language",
@@ -6839,7 +6722,7 @@
           "records"
         ],
         "title": "SessionSnapshot",
-        "description": "Return an authorized high-water session projection with tasks, records, and usage totals."
+        "description": "Return an authorized high-water session projection with tasks and records."
       },
       "SessionSummary": {
         "properties": {
@@ -7938,139 +7821,6 @@
         "type": "object",
         "title": "TurnToolResult",
         "description": "Expose bounded counts from a completed tool without forwarding raw provider output."
-      },
-      "UsageReport": {
-        "properties": {
-          "total": {
-            "$ref": "#/components/schemas/UsageTotals"
-          },
-          "byTask": {
-            "items": {
-              "$ref": "#/components/schemas/ScopedUsageTotals"
-            },
-            "type": "array",
-            "title": "Bytask"
-          },
-          "byRequest": {
-            "items": {
-              "$ref": "#/components/schemas/ScopedUsageTotals"
-            },
-            "type": "array",
-            "title": "Byrequest"
-          },
-          "byApiKey": {
-            "items": {
-              "$ref": "#/components/schemas/ScopedUsageTotals"
-            },
-            "type": "array",
-            "title": "Byapikey"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "total",
-          "byTask",
-          "byRequest",
-          "byApiKey"
-        ],
-        "title": "UsageReport",
-        "description": "Group usage totals globally and by task, request, and API key."
-      },
-      "UsageTotals": {
-        "properties": {
-          "invocationCount": {
-            "type": "integer",
-            "title": "Invocationcount"
-          },
-          "pendingInvocationCount": {
-            "type": "integer",
-            "title": "Pendinginvocationcount"
-          },
-          "cancelledInvocationCount": {
-            "type": "integer",
-            "title": "Cancelledinvocationcount"
-          },
-          "obsoleteInvocationCount": {
-            "type": "integer",
-            "title": "Obsoleteinvocationcount"
-          },
-          "unknownTokenInvocationCount": {
-            "type": "integer",
-            "title": "Unknowntokeninvocationcount"
-          },
-          "unknownCostInvocationCount": {
-            "type": "integer",
-            "title": "Unknowncostinvocationcount"
-          },
-          "reportedCostInvocationCount": {
-            "type": "integer",
-            "title": "Reportedcostinvocationcount"
-          },
-          "estimatedCostInvocationCount": {
-            "type": "integer",
-            "title": "Estimatedcostinvocationcount"
-          },
-          "configurationEstimateInvocationCount": {
-            "type": "integer",
-            "title": "Configurationestimateinvocationcount"
-          },
-          "inputTokens": {
-            "type": "integer",
-            "title": "Inputtokens"
-          },
-          "outputTokens": {
-            "type": "integer",
-            "title": "Outputtokens"
-          },
-          "cachedInputTokens": {
-            "type": "integer",
-            "title": "Cachedinputtokens"
-          },
-          "reportedUsd": {
-            "type": "string",
-            "title": "Reportedusd"
-          },
-          "estimatedUsd": {
-            "type": "string",
-            "title": "Estimatedusd"
-          },
-          "knownUsd": {
-            "type": "string",
-            "title": "Knownusd"
-          },
-          "tokensComplete": {
-            "type": "boolean",
-            "title": "Tokenscomplete"
-          },
-          "costComplete": {
-            "type": "boolean",
-            "title": "Costcomplete"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "invocationCount",
-          "pendingInvocationCount",
-          "cancelledInvocationCount",
-          "obsoleteInvocationCount",
-          "unknownTokenInvocationCount",
-          "unknownCostInvocationCount",
-          "reportedCostInvocationCount",
-          "estimatedCostInvocationCount",
-          "configurationEstimateInvocationCount",
-          "inputTokens",
-          "outputTokens",
-          "cachedInputTokens",
-          "reportedUsd",
-          "estimatedUsd",
-          "knownUsd",
-          "tokensComplete",
-          "costComplete"
-        ],
-        "title": "UsageTotals",
-        "description": "Summarize invocation, token, and cost completeness for a usage scope."
       },
       "ValidationError": {
         "properties": {

@@ -107,6 +107,7 @@ export enum AiRuntimeResolutionErrorCode {
 /** AiModelProfileKind */
 export enum AiModelProfileKind {
   Chat = "chat",
+  Image = "image",
   Embedding = "embedding",
   SpeechToText = "speechToText",
   TextToSpeech = "textToSpeech",
@@ -640,8 +641,6 @@ export interface ApiKeyUpdateRequest {
    * ElevenLabs Scribe speech-to-text API key used for voice mentor transcription.
    */
   speechToTextApiKey?: string | null;
-  /** Napkinapikey */
-  napkinApiKey?: string | null;
   /**
    * Texttospeechapikey
    * Text-to-speech provider API key. Currently only Cartesia is supported.
@@ -2224,52 +2223,6 @@ export interface ScaleOption {
 }
 
 /**
- * ScopedUsageTotals
- * Attach usage totals to one task, request, or API-key scope.
- */
-export interface ScopedUsageTotals {
-  /** Invocationcount */
-  invocationCount: number;
-  /** Pendinginvocationcount */
-  pendingInvocationCount: number;
-  /** Cancelledinvocationcount */
-  cancelledInvocationCount: number;
-  /** Obsoleteinvocationcount */
-  obsoleteInvocationCount: number;
-  /** Unknowntokeninvocationcount */
-  unknownTokenInvocationCount: number;
-  /** Unknowncostinvocationcount */
-  unknownCostInvocationCount: number;
-  /** Reportedcostinvocationcount */
-  reportedCostInvocationCount: number;
-  /** Estimatedcostinvocationcount */
-  estimatedCostInvocationCount: number;
-  /** Configurationestimateinvocationcount */
-  configurationEstimateInvocationCount: number;
-  /** Inputtokens */
-  inputTokens: number;
-  /** Outputtokens */
-  outputTokens: number;
-  /** Cachedinputtokens */
-  cachedInputTokens: number;
-  /** Reportedusd */
-  reportedUsd: string;
-  /** Estimatedusd */
-  estimatedUsd: string;
-  /** Knownusd */
-  knownUsd: string;
-  /** Tokenscomplete */
-  tokensComplete: boolean;
-  /** Costcomplete */
-  costComplete: boolean;
-  /**
-   * Scopeid
-   * @format uuid
-   */
-  scopeId: string;
-}
-
-/**
  * SelectedChapterContext
  * Carry a selected lesson's parent chapter identity and current chapter baseline.
  */
@@ -2341,11 +2294,9 @@ export interface SelectedLessonContext {
 
 /**
  * SessionSnapshot
- * Return an authorized high-water session projection with tasks, records, and usage totals.
+ * Return an authorized high-water session projection with tasks and records.
  */
 export interface SessionSnapshot {
-  /** Group usage totals globally and by task, request, and API key. */
-  usage: UsageReport;
   /**
    * Reasoningcontrolavailable
    * @default false
@@ -2833,62 +2784,6 @@ export interface TurnToolResult {
   sourceCount?: number | null;
   /** Findingcount */
   findingCount?: number | null;
-}
-
-/**
- * UsageReport
- * Group usage totals globally and by task, request, and API key.
- */
-export interface UsageReport {
-  /** Summarize invocation, token, and cost completeness for a usage scope. */
-  total: UsageTotals;
-  /** Bytask */
-  byTask: ScopedUsageTotals[];
-  /** Byrequest */
-  byRequest: ScopedUsageTotals[];
-  /** Byapikey */
-  byApiKey: ScopedUsageTotals[];
-}
-
-/**
- * UsageTotals
- * Summarize invocation, token, and cost completeness for a usage scope.
- */
-export interface UsageTotals {
-  /** Invocationcount */
-  invocationCount: number;
-  /** Pendinginvocationcount */
-  pendingInvocationCount: number;
-  /** Cancelledinvocationcount */
-  cancelledInvocationCount: number;
-  /** Obsoleteinvocationcount */
-  obsoleteInvocationCount: number;
-  /** Unknowntokeninvocationcount */
-  unknownTokenInvocationCount: number;
-  /** Unknowncostinvocationcount */
-  unknownCostInvocationCount: number;
-  /** Reportedcostinvocationcount */
-  reportedCostInvocationCount: number;
-  /** Estimatedcostinvocationcount */
-  estimatedCostInvocationCount: number;
-  /** Configurationestimateinvocationcount */
-  configurationEstimateInvocationCount: number;
-  /** Inputtokens */
-  inputTokens: number;
-  /** Outputtokens */
-  outputTokens: number;
-  /** Cachedinputtokens */
-  cachedInputTokens: number;
-  /** Reportedusd */
-  reportedUsd: string;
-  /** Estimatedusd */
-  estimatedUsd: string;
-  /** Knownusd */
-  knownUsd: string;
-  /** Tokenscomplete */
-  tokensComplete: boolean;
-  /** Costcomplete */
-  costComplete: boolean;
 }
 
 /** ValidationError */
@@ -3433,7 +3328,7 @@ export class API<
       }),
 
     /**
-     * @description Return the authorized durable workspace snapshot, including task and usage state.
+     * @description Return the authorized durable workspace snapshot, including task state.
      *
      * @tags Public - Require API Key
      * @name GetSessionApiPublicV1AuthoringSessionsSessionIdGet
