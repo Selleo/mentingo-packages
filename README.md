@@ -1,14 +1,18 @@
-# mentingo-ui
+# Mentingo Packages
 
-Reusable UI building blocks extracted from [Mentingo](https://github.com/Selleo/mentingo) and
-published to npm under the `@mentingo` scope. Each package is versioned and released independently
-and never talks to an API on its own; the consuming application provides the transport.
+Reusable libraries for [Mentingo](https://github.com/Selleo/mentingo): UI and voice building
+blocks, plus the Luma API SDK. Each package is versioned and released independently. UI packages
+receive transport from their consuming application; the SDK provides HTTP and realtime clients.
+
+`mentingo-packages` is the proposed repository name. The GitHub repository remains `mentingo-ui`
+until it is renamed, and existing package names and import paths remain unchanged.
 
 ## Packages
 
-| Package                         | Path         | Description                                                                      |
-| ------------------------------- | ------------ | -------------------------------------------------------------------------------- |
-| [`@mentingo/voice`](apps/voice) | `apps/voice` | Voice mentor: microphone capture with Silero VAD, mentor playback and session UI |
+| Package                            | Path            | Description                                                                        |
+| ---------------------------------- | --------------- | ---------------------------------------------------------------------------------- |
+| [`@mentingo/voice`](apps/voice)    | `apps/voice`    | Voice mentor: microphone capture with Silero VAD, mentor playback and session UI   |
+| [`@japro/luma-sdk`](apps/luma-sdk) | `apps/luma-sdk` | Luma HTTP API, durable course authoring, administration and realtime audio clients |
 
 Every publishable package lives in `apps/`. `packages/` holds internal tooling that is never
 published, currently `@mentingo/typescript-config` with the `base` and `react-library` presets.
@@ -28,13 +32,24 @@ pnpm format
 ```
 
 Commands run through Turborepo for every package; use `pnpm --filter <package> <command>` to
-target one. CI runs `format:check`, `typecheck`, `test` and `build` on every pull request.
+target one:
+
+```sh
+pnpm --filter @mentingo/voice test
+pnpm --filter @japro/luma-sdk typecheck
+pnpm --filter @japro/luma-sdk test
+pnpm --filter @japro/luma-sdk build
+pnpm --filter @japro/luma-sdk generate:client
+```
+
+The SDK owns its OpenAPI schema and generated client in `apps/luma-sdk/src/api/`. Regenerate the
+client through its script when updating the schema. CI runs `format:check`, `typecheck`, `test` and `build` on every pull request.
 
 ## Adding a package
 
 Create `apps/<name>` with a `package.json` that:
 
-- is named `@mentingo/<name>` with `"publishConfig": { "access": "public" }`,
+- uses the appropriate published scope (normally `@mentingo/<name>`) with `"publishConfig": { "access": "public" }`,
 - lists only build output, `README.md` and `LICENSE` in `files`,
 - declares entry points in `exports` with types,
 - defines `build`, `typecheck` and `test` scripts so Turborepo and CI pick them up,
@@ -68,8 +83,13 @@ git push origin --tags
 ```
 
 `pnpm release` publishes every package version that is not on npm yet, running each package's
-`prepack` checks, and tags the commit as `@mentingo/<name>@<version>`. The publisher needs
-permission for the `@mentingo` npm scope, and published versions cannot be reused.
+`prepack` checks, and tags the commit with its package name and version. The publisher needs permission for each
+package scope being released (`@mentingo` or `@japro`), and published versions cannot be reused.
+
+The migrated SDK remains `@japro/luma-sdk@0.3.0`. Migration alone does not bump its version.
+Coordinate its initial publication with the former standalone repository: publish `0.3.0` from
+only one owner. Future SDK changes use this workspace and Changesets; if `0.3.0` has already been
+published, the workspace release skips that existing version.
 
 ## Contributing
 

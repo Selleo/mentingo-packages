@@ -1,0 +1,73 @@
+{
+  "name": "@japro/luma-sdk",
+  "version": "0.3.0",
+  "description": "Luma API SDK",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "contracts": [
+        "dist/contracts.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./contracts": {
+      "types": "./dist/contracts.d.ts",
+      "import": "./dist/contracts.js",
+      "require": "./dist/contracts.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsup src/index.ts src/contracts.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts src/contracts.ts --watch --format esm,cjs --dts",
+    "lint": "eslint .",
+    "test": "pnpm build && pnpm test:types && node --test test/*.test.js",
+    "test:types": "tsc --noEmit --module ESNext --moduleResolution Bundler --target ES2020 --strict --skipLibCheck test/admin-consumer.ts test/authoring-consumer.ts",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "clean": "rm -rf dist",
+    "generate:client": "swagger-typescript-api generate -p ./src/api/api-schema-public.json -o ./src/api --axios --name generated-api.ts --api-class-name API",
+    "typecheck": "tsc --noEmit && pnpm test:types",
+    "prepack": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.2",
+    "@types/node": "25.3.0",
+    "eslint": "9.39.2",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "16.5.0",
+    "prettier": "3.8.1",
+    "swagger-typescript-api": "13.2.18",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.0",
+    "@mentingo/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "axios": "1.20.0",
+    "socket.io-client": "4.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Selleo/mentingo-ui.git",
+    "directory": "apps/luma-sdk"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
