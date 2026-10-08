@@ -2,10 +2,6 @@
 
 TypeScript SDK for the Luma platform used by Mentingo.
 
-Maintained in the [Mentingo package workspace](https://github.com/Selleo/mentingo-ui/tree/main/apps/luma-sdk).
-The npm package is `@mentingo/luma-sdk`, currently version `0.3.0`. It replaces the standalone
-`@japro/luma-sdk`; update dependency declarations and import paths to the new package.
-
 It provides two separate clients:
 
 - HTTP client for durable course authoring, Mentor chat, assets, administration and configuration
@@ -205,9 +201,6 @@ to present the appropriate next step rather than retrying every failure automati
 Download generated visuals through `client.authoring.downloadAsset({ sessionId, assetId, revision })`.
 The download is authenticated and revision-bound; import the bytes into the consuming application's
 storage and render its native image node. Do not persist temporary download URLs.
-
-The retired `client.courses` draft/chat generation namespace is removed in `0.3.0`. Use the
-session-based `client.authoring` workflow instead.
 
 ## Socket Client API
 

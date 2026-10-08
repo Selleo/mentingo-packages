@@ -4,9 +4,6 @@ Reusable libraries for [Mentingo](https://github.com/Selleo/mentingo): UI and vo
 blocks, plus the Luma API SDK. Each package is versioned and released independently. UI packages
 receive transport from their consuming application; the SDK provides HTTP and realtime clients.
 
-`mentingo-packages` is the proposed repository name. The GitHub repository remains `mentingo-ui`
-until it is renamed, and existing package names and import paths remain unchanged.
-
 ## Packages
 
 | Package                               | Path            | Description                                                                        |
@@ -83,13 +80,7 @@ git push origin --tags
 ```
 
 `pnpm release` publishes every package version that is not on npm yet, running each package's
-`prepack` checks, and tags the commit with its package name and version. The publisher needs permission for each
-package scope being released (`@mentingo`), and published versions cannot be reused.
-
-The migrated SDK is published as `@mentingo/luma-sdk@0.3.0`. The former standalone package was
-`@japro/luma-sdk`; consumers must update their dependency and imports. The version stays `0.3.0`.
-Publish the new scoped package from this workspace. Future SDK changes use Changesets; if
-`@mentingo/luma-sdk@0.3.0` has already been published, the workspace release skips that version.
+`prepack` checks, and tags the commit with its package name and version. Publishing requires access to the `@mentingo` npm scope.
 
 ## Contributing
 
