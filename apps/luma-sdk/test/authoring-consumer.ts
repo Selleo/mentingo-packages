@@ -73,6 +73,10 @@ void snapshotPromise.then((snapshot) => {
   const firstPart = snapshot.turns?.[0]?.parts[0];
   const partKind: "text" | "tool" | "proposal" | "question" | undefined = firstPart?.partKind;
   const toolSourceCount: number | null | undefined = firstPart?.tool?.result?.sourceCount;
+  const appliedIds: string[] | undefined = snapshot.applicationDelta?.appliedOperationIds;
+  const appliedMappings: Record<string, string> | undefined = snapshot.applicationDelta?.idMappings;
+  void appliedIds;
+  void appliedMappings;
   void snapshot.courseId;
   const reasoningControlAvailable: boolean | undefined = snapshot.reasoningControlAvailable;
   void reasoningControlAvailable;

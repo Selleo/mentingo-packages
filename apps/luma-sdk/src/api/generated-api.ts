@@ -648,6 +648,14 @@ export interface ApiKeyUpdateRequest {
   textToSpeechApiKey?: string | null;
 }
 
+/** ApplicationDeltaProof */
+export interface ApplicationDeltaProof {
+  /** Appliedoperationids */
+  appliedOperationIds?: string[];
+  /** Idmappings */
+  idMappings?: Record<string, string>;
+}
+
 /**
  * ApplicationReceipt
  * Record the Core application result, ID mappings, and conflict or failure reason.
@@ -2351,6 +2359,7 @@ export interface SessionSnapshot {
    * @default false
    */
   reasoningControlAvailable?: boolean;
+  applicationDelta?: ApplicationDeltaProof;
   /**
    * Schemaversion
    * @default 1

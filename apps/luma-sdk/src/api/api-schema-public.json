@@ -3076,6 +3076,29 @@
         "type": "object",
         "title": "ApiKeyUpdateRequest"
       },
+      "ApplicationDeltaProof": {
+        "properties": {
+          "appliedOperationIds": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Appliedoperationids"
+          },
+          "idMappings": {
+            "additionalProperties": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "object",
+            "title": "Idmappings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ApplicationDeltaProof"
+      },
       "ApplicationReceipt": {
         "properties": {
           "courseId": {
@@ -6721,6 +6744,9 @@
             "type": "boolean",
             "title": "Reasoningcontrolavailable",
             "default": false
+          },
+          "applicationDelta": {
+            "$ref": "#/components/schemas/ApplicationDeltaProof"
           },
           "schemaVersion": {
             "type": "integer",
