@@ -9,10 +9,10 @@ until it is renamed, and existing package names and import paths remain unchange
 
 ## Packages
 
-| Package                            | Path            | Description                                                                        |
-| ---------------------------------- | --------------- | ---------------------------------------------------------------------------------- |
-| [`@mentingo/voice`](apps/voice)    | `apps/voice`    | Voice mentor: microphone capture with Silero VAD, mentor playback and session UI   |
-| [`@japro/luma-sdk`](apps/luma-sdk) | `apps/luma-sdk` | Luma HTTP API, durable course authoring, administration and realtime audio clients |
+| Package                               | Path            | Description                                                                        |
+| ------------------------------------- | --------------- | ---------------------------------------------------------------------------------- |
+| [`@mentingo/voice`](apps/voice)       | `apps/voice`    | Voice mentor: microphone capture with Silero VAD, mentor playback and session UI   |
+| [`@mentingo/luma-sdk`](apps/luma-sdk) | `apps/luma-sdk` | Luma HTTP API, durable course authoring, administration and realtime audio clients |
 
 Every publishable package lives in `apps/`. `packages/` holds internal tooling that is never
 published, currently `@mentingo/typescript-config` with the `base` and `react-library` presets.
@@ -36,10 +36,10 @@ target one:
 
 ```sh
 pnpm --filter @mentingo/voice test
-pnpm --filter @japro/luma-sdk typecheck
-pnpm --filter @japro/luma-sdk test
-pnpm --filter @japro/luma-sdk build
-pnpm --filter @japro/luma-sdk generate:client
+pnpm --filter @mentingo/luma-sdk typecheck
+pnpm --filter @mentingo/luma-sdk test
+pnpm --filter @mentingo/luma-sdk build
+pnpm --filter @mentingo/luma-sdk generate:client
 ```
 
 The SDK owns its OpenAPI schema and generated client in `apps/luma-sdk/src/api/`. Regenerate the
@@ -84,12 +84,12 @@ git push origin --tags
 
 `pnpm release` publishes every package version that is not on npm yet, running each package's
 `prepack` checks, and tags the commit with its package name and version. The publisher needs permission for each
-package scope being released (`@mentingo` or `@japro`), and published versions cannot be reused.
+package scope being released (`@mentingo`), and published versions cannot be reused.
 
-The migrated SDK remains `@japro/luma-sdk@0.3.0`. Migration alone does not bump its version.
-Coordinate its initial publication with the former standalone repository: publish `0.3.0` from
-only one owner. Future SDK changes use this workspace and Changesets; if `0.3.0` has already been
-published, the workspace release skips that existing version.
+The migrated SDK is published as `@mentingo/luma-sdk@0.3.0`. The former standalone package was
+`@japro/luma-sdk`; consumers must update their dependency and imports. The version stays `0.3.0`.
+Publish the new scoped package from this workspace. Future SDK changes use Changesets; if
+`@mentingo/luma-sdk@0.3.0` has already been published, the workspace release skips that version.
 
 ## Contributing
 

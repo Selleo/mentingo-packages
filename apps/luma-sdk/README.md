@@ -3,7 +3,8 @@
 TypeScript SDK for the Luma platform used by Mentingo.
 
 Maintained in the [Mentingo package workspace](https://github.com/Selleo/mentingo-ui/tree/main/apps/luma-sdk).
-The npm package remains `@japro/luma-sdk`, currently version `0.3.0`; migration does not change imports.
+The npm package is `@mentingo/luma-sdk`, currently version `0.3.0`. It replaces the standalone
+`@japro/luma-sdk`; update dependency declarations and import paths to the new package.
 
 It provides two separate clients:
 
@@ -13,17 +14,17 @@ It provides two separate clients:
 ## Installation
 
 ```bash
-pnpm add @japro/luma-sdk
+pnpm add @mentingo/luma-sdk
 # or
-npm install @japro/luma-sdk
+npm install @mentingo/luma-sdk
 # or
-yarn add @japro/luma-sdk
+yarn add @mentingo/luma-sdk
 ```
 
 ## Quick Start (HTTP)
 
 ```ts
-import { createLumaClient } from "@japro/luma-sdk";
+import { createLumaClient } from "@mentingo/luma-sdk";
 
 const client = createLumaClient({
   baseURL: "https://your-luma-api.example.com",
@@ -86,7 +87,7 @@ import {
   LUMA_AUDIO_ACTIONS,
   LUMA_AUDIO_FORMATS,
   LUMA_SOCKET_MESSAGE_TYPES,
-} from "@japro/luma-sdk";
+} from "@mentingo/luma-sdk";
 
 const socket = createLumaSocket({
   baseURL: "https://your-luma-api.example.com",
@@ -129,7 +130,7 @@ import {
   AUDIO_PROVIDER_STATES,
   AUDIO_RECOVERY_STATES,
   type AudioRecoveryPayload,
-} from "@japro/luma-sdk";
+} from "@mentingo/luma-sdk";
 
 socket.onAudioRecovered((payload: AudioRecoveryPayload) => {
   if (payload.state === AUDIO_RECOVERY_STATES.MENTOR_ACTIVE) {
@@ -254,10 +255,10 @@ Listener helpers:
 
 ```bash
 pnpm install
-pnpm --filter @japro/luma-sdk typecheck
-pnpm --filter @japro/luma-sdk test
-pnpm --filter @japro/luma-sdk build
-pnpm --filter @japro/luma-sdk lint
+pnpm --filter @mentingo/luma-sdk typecheck
+pnpm --filter @mentingo/luma-sdk test
+pnpm --filter @mentingo/luma-sdk build
+pnpm --filter @mentingo/luma-sdk lint
 ```
 
 ### Regenerate API client from OpenAPI schema
