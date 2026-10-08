@@ -1,5 +1,5 @@
 {
-  "name": "mentingo-ui",
+  "name": "mentingo-packages",
   "private": true,
   "packageManager": "pnpm@10.22.0",
   "engines": {
