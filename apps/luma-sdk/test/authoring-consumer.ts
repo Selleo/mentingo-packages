@@ -2,6 +2,7 @@ import { createLumaClient, ReasoningEffort } from "../src/index";
 import type { AuthoringRequest } from "../src/api/generated-api";
 import type {
   AuthoringCommand,
+  AuthoringOperation,
   AuthoringContextFulfillmentReceipt,
   AuthoringContextFailure,
   AuthoringContextFailureReceipt,
@@ -225,3 +226,27 @@ void snapshotPromise.then((snapshot) => {
   void progress;
 });
 void recoveringProgress;
+
+const renameLesson: AuthoringOperation = {
+  type: "lesson.metadata.update",
+  operationId: commandId,
+  targetId: sessionId,
+  language: "en",
+  baselineHash: "a".repeat(64),
+  dependencies: [],
+  payload: { title: "Clearer lesson title" },
+};
+void renameLesson;
+
+const clearIntroduction: AuthoringOperation = {
+  ...renameLesson,
+  payload: { description: "" },
+};
+void clearIntroduction;
+
+const invalidMetadata: AuthoringOperation = {
+  ...renameLesson,
+  // @ts-expect-error Lesson metadata edits do not change assessment questions.
+  payload: { questions: [] },
+};
+void invalidMetadata;

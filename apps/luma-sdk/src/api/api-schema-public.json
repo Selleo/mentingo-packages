@@ -3645,6 +3645,9 @@
                       "$ref": "#/components/schemas/LessonWrite-Input"
                     },
                     {
+                      "$ref": "#/components/schemas/LessonMetadataUpdate"
+                    },
+                    {
                       "$ref": "#/components/schemas/BlockReplace"
                     },
                     {
@@ -3675,6 +3678,7 @@
                       "lesson.block.replace": "#/components/schemas/BlockReplace",
                       "lesson.create": "#/components/schemas/LessonWrite-Input",
                       "lesson.delete": "#/components/schemas/DeleteOperation",
+                      "lesson.metadata.update": "#/components/schemas/LessonMetadataUpdate",
                       "lesson.reorder": "#/components/schemas/ReorderOperation",
                       "lesson.update": "#/components/schemas/LessonWrite-Input"
                     }
@@ -4936,6 +4940,9 @@
                   "$ref": "#/components/schemas/LessonWrite-Output"
                 },
                 {
+                  "$ref": "#/components/schemas/LessonMetadataUpdate"
+                },
+                {
                   "$ref": "#/components/schemas/BlockReplace"
                 },
                 {
@@ -4966,6 +4973,7 @@
                   "lesson.block.replace": "#/components/schemas/BlockReplace",
                   "lesson.create": "#/components/schemas/LessonWrite-Output",
                   "lesson.delete": "#/components/schemas/DeleteOperation",
+                  "lesson.metadata.update": "#/components/schemas/LessonMetadataUpdate",
                   "lesson.reorder": "#/components/schemas/ReorderOperation",
                   "lesson.update": "#/components/schemas/LessonWrite-Output"
                 }
@@ -5120,6 +5128,97 @@
           "learnerSafeFeedback"
         ],
         "title": "JudgeTriggeredBlockingError"
+      },
+      "LessonMetadataPayload": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LessonMetadataPayload",
+        "description": "Patch lesson text without rewriting lesson configuration, assessment, or resources."
+      },
+      "LessonMetadataUpdate": {
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Operationid"
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Targetid"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "pl",
+              "de",
+              "lt",
+              "cs",
+              "es",
+              "fr"
+            ],
+            "title": "Language"
+          },
+          "baselineHash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baselinehash"
+          },
+          "dependencies": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Dependencies"
+          },
+          "fieldBaselines": {
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "type": "object",
+            "title": "Fieldbaselines"
+          },
+          "type": {
+            "type": "string",
+            "const": "lesson.metadata.update",
+            "title": "Type"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LessonMetadataPayload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operationId",
+          "targetId",
+          "language",
+          "type",
+          "payload"
+        ],
+        "title": "LessonMetadataUpdate",
+        "description": "Update only explicitly supplied lesson title or description under its baseline fence."
       },
       "LessonWrite-Input": {
         "properties": {
