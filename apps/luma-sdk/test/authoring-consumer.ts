@@ -2,6 +2,7 @@ import { createLumaClient, ReasoningEffort } from "../src/index";
 import type { AuthoringRequest } from "../src/api/generated-api";
 import type {
   AuthoringCommand,
+  AuthoringOperation,
   AuthoringContextFulfillmentReceipt,
   AuthoringContextFailure,
   AuthoringContextFailureReceipt,
@@ -72,6 +73,10 @@ void snapshotPromise.then((snapshot) => {
   const firstPart = snapshot.turns?.[0]?.parts[0];
   const partKind: "text" | "tool" | "proposal" | "question" | undefined = firstPart?.partKind;
   const toolSourceCount: number | null | undefined = firstPart?.tool?.result?.sourceCount;
+  const appliedIds: string[] | undefined = snapshot.applicationDelta?.appliedOperationIds;
+  const appliedMappings: Record<string, string> | undefined = snapshot.applicationDelta?.idMappings;
+  void appliedIds;
+  void appliedMappings;
   void snapshot.courseId;
   const reasoningControlAvailable: boolean | undefined = snapshot.reasoningControlAvailable;
   void reasoningControlAvailable;
@@ -225,3 +230,27 @@ void snapshotPromise.then((snapshot) => {
   void progress;
 });
 void recoveringProgress;
+
+const renameLesson: AuthoringOperation = {
+  type: "lesson.metadata.update",
+  operationId: commandId,
+  targetId: sessionId,
+  language: "en",
+  baselineHash: "a".repeat(64),
+  dependencies: [],
+  payload: { title: "Clearer lesson title" },
+};
+void renameLesson;
+
+const clearIntroduction: AuthoringOperation = {
+  ...renameLesson,
+  payload: { description: "" },
+};
+void clearIntroduction;
+
+const invalidMetadata: AuthoringOperation = {
+  ...renameLesson,
+  // @ts-expect-error Lesson metadata edits do not change assessment questions.
+  payload: { questions: [] },
+};
+void invalidMetadata;

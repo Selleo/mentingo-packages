@@ -648,6 +648,14 @@ export interface ApiKeyUpdateRequest {
   textToSpeechApiKey?: string | null;
 }
 
+/** ApplicationDeltaProof */
+export interface ApplicationDeltaProof {
+  /** Appliedoperationids */
+  appliedOperationIds?: string[];
+  /** Idmappings */
+  idMappings?: Record<string, string>;
+}
+
 /**
  * ApplicationReceipt
  * Record the Core application result, ID mappings, and conflict or failure reason.
@@ -921,6 +929,9 @@ export interface AuthoringCommand {
         | ({
             type: "lesson.delete";
           } & DeleteOperation)
+        | ({
+            type: "lesson.metadata.update";
+          } & LessonMetadataUpdate)
         | ({
             type: "lesson.reorder";
           } & ReorderOperation)
@@ -1606,6 +1617,9 @@ export interface FrozenExport {
         type: "lesson.delete";
       } & DeleteOperation)
     | ({
+        type: "lesson.metadata.update";
+      } & LessonMetadataUpdate)
+    | ({
         type: "lesson.reorder";
       } & ReorderOperation)
     | ({
@@ -1677,6 +1691,49 @@ export interface JudgeTriggeredBlockingError {
    * @minLength 1
    */
   learnerSafeFeedback: string;
+}
+
+/**
+ * LessonMetadataPayload
+ * Patch lesson text without rewriting lesson configuration, assessment, or resources.
+ */
+export interface LessonMetadataPayload {
+  /**
+   * Title
+   * @minLength 1
+   */
+  title?: string;
+  /** Description */
+  description?: string;
+}
+
+/**
+ * LessonMetadataUpdate
+ * Update only explicitly supplied lesson title or description under its baseline fence.
+ */
+export interface LessonMetadataUpdate {
+  /**
+   * Operationid
+   * @format uuid
+   */
+  operationId: string;
+  /**
+   * Targetid
+   * @format uuid
+   */
+  targetId: string;
+  /** Language */
+  language: "en" | "pl" | "de" | "lt" | "cs" | "es" | "fr";
+  /** Baselinehash */
+  baselineHash?: string | null;
+  /** Dependencies */
+  dependencies?: string[];
+  /** Fieldbaselines */
+  fieldBaselines?: Record<string, string>;
+  /** Type */
+  type: "lesson.metadata.update";
+  /** Patch lesson text without rewriting lesson configuration, assessment, or resources. */
+  payload: LessonMetadataPayload;
 }
 
 /**
@@ -2302,6 +2359,7 @@ export interface SessionSnapshot {
    * @default false
    */
   reasoningControlAvailable?: boolean;
+  applicationDelta?: ApplicationDeltaProof;
   /**
    * Schemaversion
    * @default 1
