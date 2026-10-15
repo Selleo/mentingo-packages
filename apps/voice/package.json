@@ -1,6 +1,6 @@
 {
   "name": "@mentingo/voice",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Transport-agnostic voice mentor building blocks: mic capture with Silero VAD, PCM playback, turn state and React UI.",
   "license": "MIT",
   "repository": {

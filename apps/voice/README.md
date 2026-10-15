@@ -10,7 +10,7 @@ owns the socket connection and forwards audio and events between the package and
 Install from npmjs.com:
 
 ```sh
-pnpm add @mentingo/voice@0.1.0
+pnpm add @mentingo/voice@0.2.0
 ```
 
 ## Usage
