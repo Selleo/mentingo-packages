@@ -50,6 +50,7 @@ export type VoiceMentorModeOverlayProps = {
   onRestart: () => void;
   onExit: () => void;
   labels?: VoiceSessionLabelsInput;
+  notice?: ReactNode;
   visualizerColor?: string;
   className?: string;
 };
@@ -78,6 +79,7 @@ export function VoiceMentorModeOverlay({
   onRestart,
   onExit,
   labels: labelsInput,
+  notice,
   visualizerColor,
   className,
 }: VoiceMentorModeOverlayProps) {
@@ -127,6 +129,16 @@ export function VoiceMentorModeOverlay({
               </div>
               <VoiceSessionControls {...controlProps} />
             </div>
+
+            {notice && (
+              <div
+                role="alert"
+                data-testid={VOICE_SESSION_TEST_IDS.NOTICE}
+                className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm"
+              >
+                {notice}
+              </div>
+            )}
 
             {connectionState === VOICE_CONNECTION_STATE.FAILED && (
               <VoiceSessionConnectionAlert

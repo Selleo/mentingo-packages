@@ -11,4 +11,5 @@ export const VOICE_SESSION_TEST_IDS = {
   EXIT_BUTTON: "learning-ai-mentor-voice-overlay-exit-button",
   RECOVERY_STATUS: "learning-ai-mentor-voice-overlay-recovery-status",
   RESTART_BUTTON: "learning-ai-mentor-voice-overlay-restart-button",
+  NOTICE: "voice-session-notice",
 } as const;

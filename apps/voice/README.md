@@ -161,8 +161,20 @@ Returns `voiceModeState` (`idle`, `listening`, `thinking`, `speaking`) and the e
   `VoiceSessionConnectionAlert` - the blocks the overlay is built from.
 - `AgentAudioVisualizerAura`, `AgentAudioVisualizerWave`, `VoiceLevelBars` - visualizers.
 
+- `VoiceJudgeResultDialog` - AI judge result: pass or fail, score with percentage and passing
+  threshold, a bar and feedback per criterion, blocking errors, and a suggestion from the AI Mentor
+  (the feedback of the lowest-scoring criterion). Takes the judge response (`VoiceJudgeEvaluation`,
+  the same shape as Mentingo's judge endpoint) plus `open` and `onOpenChange`. Optional `subtitle`
+  (for example the lesson or scenario), `tip` (overrides the suggestion, `null` hides it) and
+  `actions` (footer buttons; defaults to a single close button).
+- `VoiceJudgeEvaluationLoader` - progress state while a judgement runs.
+
+`VoiceMentorModeOverlay` also accepts a `notice` to show a message above the conversation, for
+example when a mentor turn fails.
+
 All visible text comes from the `labels` prop; English defaults are exported as
-`DEFAULT_VOICE_SESSION_LABELS`. Test ids are exported as `VOICE_SESSION_TEST_IDS`.
+`DEFAULT_VOICE_SESSION_LABELS` and `DEFAULT_VOICE_JUDGE_LABELS`. Test ids are exported as
+`VOICE_SESSION_TEST_IDS` and `VOICE_JUDGE_TEST_IDS`.
 
 ## Public Exports
 
