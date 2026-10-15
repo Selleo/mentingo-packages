@@ -41,33 +41,71 @@ const failedEvaluation: VoiceJudgeEvaluation = {
 };
 
 describe("VoiceJudgeResultDialog", () => {
-  it("shows the outcome, score, threshold, blocking errors and criteria", () => {
+  it("shows the outcome, score, threshold, criteria with feedback and blocking errors", () => {
     render(<VoiceJudgeResultDialog evaluation={failedEvaluation} open onOpenChange={vi.fn()} />);
 
-    expect(screen.getByRole("heading", { name: "Lesson not passed" })).toBeInTheDocument();
-    expect(screen.getByText("3/6 conditions met (50%)")).toBeInTheDocument();
-    expect(screen.getByText("4/6 required (67%)")).toBeInTheDocument();
-    expect(screen.getByText("Rude to the client")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Not passed yet" })).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(screen.getByText("/ 6 pts")).toBeInTheDocument();
+    expect(screen.getByText("50% · passing threshold 4/6 pts")).toBeInTheDocument();
     expect(screen.getByText("Explores the client's needs")).toBeInTheDocument();
+    expect(screen.getByText("You asked about priorities.")).toBeInTheDocument();
     expect(screen.getByText("Criterion 2")).toBeInTheDocument();
-    expect(screen.getByText("1/2 pts")).toBeInTheDocument();
+    expect(screen.getByText("1/2")).toBeInTheDocument();
+    expect(screen.getByText("Rude to the client")).toBeInTheDocument();
+    expect(screen.getByText("You dismissed the client's concern.")).toBeInTheDocument();
   });
 
-  it("uses provided labels and closes from the close button", () => {
+  it("suggests the feedback of the weakest criterion unless a tip is given", () => {
+    const { rerender } = render(
+      <VoiceJudgeResultDialog evaluation={failedEvaluation} open onOpenChange={vi.fn()} />,
+    );
+
+    const tip = screen.getByRole("complementary", { name: "Suggestion from the AI Mentor" });
+    expect(tip).toHaveTextContent("Value stayed general.");
+
+    rerender(
+      <VoiceJudgeResultDialog
+        evaluation={failedEvaluation}
+        open
+        onOpenChange={vi.fn()}
+        tip={null}
+      />,
+    );
+    expect(screen.queryByRole("complementary")).not.toBeInTheDocument();
+  });
+
+  it("uses provided labels, subtitle and closes from the default close button", () => {
     const onOpenChange = vi.fn();
     render(
       <VoiceJudgeResultDialog
         evaluation={{ passed: true, score: 6, maxScore: 6, minScore: 4, percentage: 100 }}
         open
         onOpenChange={onOpenChange}
+        subtitle="Sales · Anna"
         labels={{ passedTitle: "Zaliczone", close: "Zamknij" }}
       />,
     );
 
     expect(screen.getByRole("heading", { name: "Zaliczone" })).toBeInTheDocument();
+    expect(screen.getByText("Sales · Anna")).toBeInTheDocument();
     expect(screen.getByText("No detailed feedback available")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId(VOICE_JUDGE_TEST_IDS.CLOSE_BUTTON));
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("renders custom actions in place of the close button", () => {
+    render(
+      <VoiceJudgeResultDialog
+        evaluation={failedEvaluation}
+        open
+        onOpenChange={vi.fn()}
+        actions={<button type="button">Try again</button>}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Try again" })).toBeInTheDocument();
+    expect(screen.queryByTestId(VOICE_JUDGE_TEST_IDS.CLOSE_BUTTON)).not.toBeInTheDocument();
   });
 
   it("renders nothing while closed", () => {

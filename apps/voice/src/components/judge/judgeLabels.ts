@@ -1,21 +1,23 @@
 export type VoiceJudgeLabels = {
+  kicker: string;
   title: string;
   passedTitle: string;
   failedTitle: string;
   passedDescription: string;
   failedDescription: string;
-  scoreLabel: string;
-  scoreValue: (values: { score: number; maxScore: number; percentage: number }) => string;
-  thresholdLabel: string;
-  thresholdValue: (values: {
-    requiredScore: number;
+  scoreTotal: (values: { maxScore: number }) => string;
+  summary: (values: {
+    percentage: number;
+    requiredScore: number | null;
     maxScore: number;
-    threshold: number;
+    threshold: number | null;
   }) => string;
-  criticalErrorsTitle: string;
   criteriaTitle: string;
   criterionScore: (values: { score: number; maxScore: number }) => string;
   criterionFallback: (number: number) => string;
+  criticalErrorsTitle: string;
+  tipTitle: string;
+  tipNote: string;
   noFeedbackTitle: string;
   noFeedbackDescription: string;
   loadingTitle: string;
@@ -24,21 +26,23 @@ export type VoiceJudgeLabels = {
 };
 
 export const DEFAULT_VOICE_JUDGE_LABELS: VoiceJudgeLabels = {
-  title: "Result",
-  passedTitle: "Lesson passed",
-  failedTitle: "Lesson not passed",
+  kicker: "AI Mentor review",
+  title: "Conversation summary",
+  passedTitle: "Passed",
+  failedTitle: "Not passed yet",
   passedDescription: "Your answer met the requirements for this lesson.",
   failedDescription: "Review the feedback and try again when you're ready.",
-  scoreLabel: "Score",
-  scoreValue: ({ score, maxScore, percentage }) =>
-    `${score}/${maxScore} conditions met (${percentage}%)`,
-  thresholdLabel: "Passing threshold",
-  thresholdValue: ({ requiredScore, maxScore, threshold }) =>
-    `${requiredScore}/${maxScore} required (${threshold}%)`,
-  criticalErrorsTitle: "What prevented completion",
+  scoreTotal: ({ maxScore }) => `/ ${maxScore} pts`,
+  summary: ({ percentage, requiredScore, maxScore }) =>
+    requiredScore === null
+      ? `${percentage}%`
+      : `${percentage}% · passing threshold ${requiredScore}/${maxScore} pts`,
   criteriaTitle: "Criteria breakdown",
-  criterionScore: ({ score, maxScore }) => `${score}/${maxScore} pts`,
+  criterionScore: ({ score, maxScore }) => `${score}/${maxScore}`,
   criterionFallback: (number) => `Criterion ${number}`,
+  criticalErrorsTitle: "What prevented completion",
+  tipTitle: "Suggestion from the AI Mentor",
+  tipNote: "Based on what you said in this conversation",
   noFeedbackTitle: "No detailed feedback available",
   noFeedbackDescription:
     "This assessment has no scored criteria, and no blocking errors were detected in your attempt.",
