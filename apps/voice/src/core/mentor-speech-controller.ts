@@ -27,6 +27,8 @@ export type MentorAudioChunk = {
   turnId: string;
   seq: number;
   audio: ArrayBuffer | Uint8Array | string;
+  /** PCM source rate from the transport; missing values use the controller's default. */
+  sampleRate?: number | null;
 };
 
 export class MentorSpeechController {
@@ -86,8 +88,11 @@ export class MentorSpeechController {
     await this.player.start();
   }
 
-  async pushAudio({ turnId, seq, audio }: MentorAudioChunk): Promise<boolean> {
+  async pushAudio({ turnId, seq, audio, sampleRate }: MentorAudioChunk): Promise<boolean> {
     if (typeof seq !== "number" || !turnId) {
+      return false;
+    }
+    if (sampleRate != null && (!Number.isFinite(sampleRate) || sampleRate <= 0)) {
       return false;
     }
 
@@ -115,7 +120,7 @@ export class MentorSpeechController {
       this.options.onTurnStarted?.(turnId);
     }
 
-    await this.player.enqueue(bytes, turnId);
+    await this.player.enqueue(bytes, turnId, sampleRate ?? undefined);
     this.restartInactivityTimer();
     return true;
   }
