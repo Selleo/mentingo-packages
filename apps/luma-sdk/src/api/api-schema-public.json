@@ -2042,6 +2042,16 @@
                 "type": "null"
               }
             ]
+          },
+          "vendor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TTSProvider"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -2943,6 +2953,24 @@
         ],
         "title": "ApiKeyCreateResponse"
       },
+      "ApiKeyMetadata": {
+        "properties": {
+          "textToSpeechProvider": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextToSpeechProvider"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "ApiKeyMetadata",
+        "description": "Extensible non-secret API key settings; recognized routing values are validated."
+      },
       "ApiKeyResponse": {
         "properties": {
           "id": {
@@ -2991,6 +3019,40 @@
               }
             ],
             "title": "Revokedat"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ApiKeyMetadata"
+          },
+          "effectiveTextToSpeechProvider": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TTSProvider"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Provider used for voice output: the chosen one, else the platform default."
+          },
+          "hasEmbeddingApiKey": {
+            "type": "boolean",
+            "title": "Hasembeddingapikey",
+            "default": false
+          },
+          "hasAgentApiKey": {
+            "type": "boolean",
+            "title": "Hasagentapikey",
+            "default": false
+          },
+          "hasSpeechToTextApiKey": {
+            "type": "boolean",
+            "title": "Hasspeechtotextapikey",
+            "default": false
+          },
+          "hasTextToSpeechApiKey": {
+            "type": "boolean",
+            "title": "Hastexttospeechapikey",
+            "default": false
           }
         },
         "type": "object",
@@ -3070,7 +3132,18 @@
               }
             ],
             "title": "Texttospeechapikey",
-            "description": "Text-to-speech provider API key. Currently only Cartesia is supported."
+            "description": "API key of the selected text-to-speech provider (Cartesia or ElevenLabs). Write-only."
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApiKeyMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Merge non-secret settings. Null values remove individual metadata entries."
           }
         },
         "type": "object",
@@ -7324,6 +7397,15 @@
         ],
         "title": "StructuredGenerationRequest"
       },
+      "TTSProvider": {
+        "type": "string",
+        "enum": [
+          "cartesia",
+          "elevenlabs",
+          "fish"
+        ],
+        "title": "TTSProvider"
+      },
       "TargetRef": {
         "properties": {
           "targetId": {
@@ -7589,6 +7671,15 @@
         ],
         "title": "TaskSummary",
         "description": "Expose the durable lifecycle and output reference of one authoring task."
+      },
+      "TextToSpeechProvider": {
+        "type": "string",
+        "enum": [
+          "cartesia",
+          "elevenlabs"
+        ],
+        "title": "TextToSpeechProvider",
+        "description": "Text-to-speech vendors an API key can choose; no choice means the platform default."
       },
       "TranscriptionResponse": {
         "properties": {
@@ -7856,6 +7947,35 @@
         "title": "TurnPartStatus",
         "description": "Describe the lifecycle of one stable assistant response part."
       },
+      "TurnResearchSource": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 600
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "TurnResearchSource",
+        "description": "Retain public provenance links in replayable research activity."
+      },
       "TurnStatus": {
         "type": "string",
         "enum": [
@@ -7917,6 +8037,48 @@
       },
       "TurnToolResult": {
         "properties": {
+          "query": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "queries": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Queries"
+          },
+          "sources": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TurnResearchSource"
+                },
+                "type": "array",
+                "maxItems": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sources"
+          },
           "sourceCount": {
             "anyOf": [
               {
@@ -7945,7 +8107,7 @@
         "additionalProperties": false,
         "type": "object",
         "title": "TurnToolResult",
-        "description": "Expose bounded counts from a completed tool without forwarding raw provider output."
+        "description": "Retain bounded public research metadata without forwarding extracted page text."
       },
       "ValidationError": {
         "properties": {

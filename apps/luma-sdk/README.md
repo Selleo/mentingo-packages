@@ -185,6 +185,13 @@ for the API key. The SDK exports `AiCapability`, `AiCapabilityMode`,
 Custom model names should use the backend `provider:model` format, for example
 `openai:gpt-4.1-mini` or `ollama:llama3.1`.
 
+Voice TTS capabilities expose an optional `vendor` (`TTSProvider`) for core-mode
+routing. API key settings use extensible non-secret metadata, for example
+`metadata: { textToSpeechProvider: TextToSpeechProvider.Elevenlabs }` in
+`admin.apiKeys.update`. Omitted metadata entries stay unchanged; setting an entry
+to `null` removes it. Credentials remain in the write-only `textToSpeechApiKey`
+field; `hasTextToSpeechApiKey` reports whether one is saved.
+
 For voice mentor flows, use `client.mentor.streamChat({ ..., voiceSessionId })` so streamed mentor text can be forwarded to the active socket session without a separate polling or relay step. Use `client.mentor.generateChat(opts)` only for normal one-shot text responses.
 
 ## Durable Course Authoring

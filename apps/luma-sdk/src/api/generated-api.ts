@@ -47,6 +47,15 @@ export enum TurnPartKind {
 }
 
 /**
+ * TextToSpeechProvider
+ * Text-to-speech vendors an API key can choose; no choice means the platform default.
+ */
+export enum TextToSpeechProvider {
+  Cartesia = "cartesia",
+  Elevenlabs = "elevenlabs",
+}
+
+/**
  * TaskKind
  * Enumerate graph task kinds persisted in task contracts and dispatch records.
  */
@@ -60,6 +69,13 @@ export enum TaskKind {
   Source = "source",
   Asset = "asset",
   CourseReview = "course_review",
+}
+
+/** TTSProvider */
+export enum TTSProvider {
+  Cartesia = "cartesia",
+  Elevenlabs = "elevenlabs",
+  Fish = "fish",
 }
 
 /**
@@ -197,6 +213,7 @@ export interface AiCapabilityStatus {
   mode: AiCapabilityMode;
   provider: AiCapabilityProvider | null;
   reason?: AiRuntimeResolutionErrorCode | null;
+  vendor?: TTSProvider | null;
 }
 
 /** AiJudgeBlockingErrorValidationTarget */
@@ -601,6 +618,15 @@ export interface ApiKeyCreateResponse {
   createdAt: string;
 }
 
+/**
+ * ApiKeyMetadata
+ * Extensible non-secret API key settings; recognized routing values are validated.
+ */
+export interface ApiKeyMetadata {
+  textToSpeechProvider?: TextToSpeechProvider | null;
+  [key: string]: any;
+}
+
 /** ApiKeyResponse */
 export interface ApiKeyResponse {
   /**
@@ -626,6 +652,30 @@ export interface ApiKeyResponse {
   lastUsedAt?: string | null;
   /** Revokedat */
   revokedAt?: string | null;
+  /** Extensible non-secret API key settings; recognized routing values are validated. */
+  metadata?: ApiKeyMetadata;
+  /** Provider used for voice output: the chosen one, else the platform default. */
+  effectiveTextToSpeechProvider?: TTSProvider | null;
+  /**
+   * Hasembeddingapikey
+   * @default false
+   */
+  hasEmbeddingApiKey?: boolean;
+  /**
+   * Hasagentapikey
+   * @default false
+   */
+  hasAgentApiKey?: boolean;
+  /**
+   * Hasspeechtotextapikey
+   * @default false
+   */
+  hasSpeechToTextApiKey?: boolean;
+  /**
+   * Hastexttospeechapikey
+   * @default false
+   */
+  hasTextToSpeechApiKey?: boolean;
 }
 
 /** ApiKeyUpdateRequest */
@@ -643,9 +693,11 @@ export interface ApiKeyUpdateRequest {
   speechToTextApiKey?: string | null;
   /**
    * Texttospeechapikey
-   * Text-to-speech provider API key. Currently only Cartesia is supported.
+   * API key of the selected text-to-speech provider (Cartesia or ElevenLabs). Write-only.
    */
   textToSpeechApiKey?: string | null;
+  /** Merge non-secret settings. Null values remove individual metadata entries. */
+  metadata?: ApiKeyMetadata | null;
 }
 
 /** ApplicationDeltaProof */
@@ -2818,6 +2870,21 @@ export interface TurnPart {
 }
 
 /**
+ * TurnResearchSource
+ * Retain public provenance links in replayable research activity.
+ */
+export interface TurnResearchSource {
+  /**
+   * Url
+   * @minLength 1
+   * @maxLength 2048
+   */
+  url: string;
+  /** Title */
+  title?: string | null;
+}
+
+/**
  * TurnTool
  * Describe one stable tool invocation displayed inside an assistant turn.
  */
@@ -2835,9 +2902,15 @@ export interface TurnTool {
 
 /**
  * TurnToolResult
- * Expose bounded counts from a completed tool without forwarding raw provider output.
+ * Retain bounded public research metadata without forwarding extracted page text.
  */
 export interface TurnToolResult {
+  /** Query */
+  query?: string | null;
+  /** Queries */
+  queries?: string[] | null;
+  /** Sources */
+  sources?: TurnResearchSource[] | null;
   /** Sourcecount */
   sourceCount?: number | null;
   /** Findingcount */

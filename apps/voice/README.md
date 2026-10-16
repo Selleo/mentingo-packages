@@ -10,7 +10,7 @@ owns the socket connection and forwards audio and events between the package and
 Install from npmjs.com:
 
 ```sh
-pnpm add @mentingo/voice@0.2.0
+pnpm add @mentingo/voice@0.3.0
 ```
 
 ## Usage
@@ -42,8 +42,8 @@ const capture = useVoiceCapture({
   onSpeechEnd: (boundary) => socket.emit("clientSpeechEnd", boundary),
 });
 
-socket.on("audioSpeech", ({ turnId, seq, chunkBase64 }) =>
-  mentor.pushAudio({ turnId, seq, audio: chunkBase64 }),
+socket.on("audioSpeech", ({ turnId, seq, chunkBase64, sampleRate }) =>
+  mentor.pushAudio({ turnId, seq, audio: chunkBase64, sampleRate }),
 );
 socket.on("audioOutputAlignment", mentor.pushAlignment);
 socket.on("audioOutputCompleted", ({ turnId }) => mentor.completeTurn(turnId));
@@ -135,15 +135,21 @@ Methods: `start({ endpointingMode?, keepTurnOpen?, firstChunkSeq? })`, `stop()`,
 
 Options:
 
-- `sampleRate?: number` - mentor audio sample rate, default `44100`.
+- `sampleRate?: number` - fallback PCM source sample rate when a chunk omits it, default `44100`.
 - `channels?: number` - default `1`.
 - `inactivityTimeoutMs?: number` - default `5000`.
 - `onTurnStarted(turnId)`, `onTurnCompleted(turnId)`, `onInterrupted()`, `onLevelChange(level)`,
   `onPresentationChange(presentation)`
 
-Methods: `start()`, `pushAudio({ turnId, seq, audio })`, `pushAlignment(alignment)`,
+Methods: `start()`, `pushAudio({ turnId, seq, audio, sampleRate? })`, `pushAlignment(alignment)`,
 `completeTurn(turnId?)`, `handleInterrupted(turnId?)`, `interrupt()`, `reset()`. The hook also
 returns `level` and `presentation` (word timings with the active word index).
+
+Pass the transport's `sampleRate` on audio chunks, for example `24000` for ElevenLabs
+and `44100` for Cartesia. Each buffer uses its source rate; Web Audio resamples to
+the playback context without recreating it. Missing or null rates use the configured
+fallback. Non-finite or non-positive chunk rates are rejected without consuming their
+sequence number. Word alignment continues to use elapsed milliseconds.
 
 ### `useVoiceModeState()`
 

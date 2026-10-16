@@ -1,6 +1,6 @@
 {
   "name": "@mentingo/luma-sdk",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Luma API SDK",
   "license": "MIT",
   "type": "module",
