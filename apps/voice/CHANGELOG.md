@@ -1,5 +1,11 @@
 # @mentingo/voice
 
+## 0.3.0
+
+### Minor Changes
+
+- a5769d5: Support per-chunk PCM sample rates in mentor speech playback while preserving the 44.1 kHz default for existing clients.
+
 ## 0.2.0
 
 ### Minor Changes
