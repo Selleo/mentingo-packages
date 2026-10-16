@@ -135,6 +135,20 @@ test("admin apiKeys.update uses the exact PATCH path and body", async () => {
   });
 });
 
+test("admin apiKeys.update preserves metadata nulls and future settings", async () => {
+  await withRecorder({}, async ({ baseURL, requests }) => {
+    await createClient(baseURL).admin.apiKeys.update({
+      organizationId: ORGANIZATION_ID,
+      apiKeyId: API_KEY_ID,
+      metadata: { textToSpeechProvider: null, futureSetting: true },
+    });
+    assert.deepEqual(requests[0].body, {
+      metadata: { textToSpeechProvider: null, futureSetting: true },
+    });
+    assertAdminHeadersOnly(requests[0]);
+  });
+});
+
 test("admin apiKeys.revoke uses the exact DELETE path", async () => {
   await withRecorder({}, async ({ baseURL, requests }) => {
     await createClient(baseURL).admin.apiKeys.revoke({
