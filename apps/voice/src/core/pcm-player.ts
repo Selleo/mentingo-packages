@@ -74,7 +74,11 @@ export class RealtimePCMPlayer {
     );
   }
 
-  async enqueue(chunk: StreamingAudioChunk, turnId?: string) {
+  /** Schedule PCM at its source rate; Web Audio handles conversion to the context's rate. */
+  async enqueue(chunk: StreamingAudioChunk, turnId?: string, sampleRate = this.sampleRate) {
+    if (!Number.isFinite(sampleRate) || sampleRate <= 0) {
+      throw new RangeError("PCM sample rate must be a finite positive number");
+    }
     if (!this.audioCtx || !this.gainNode) {
       await this.start();
     }
@@ -93,7 +97,7 @@ export class RealtimePCMPlayer {
       return;
     }
 
-    const audioBuffer = this.audioCtx.createBuffer(this.channels, frameCount, this.sampleRate);
+    const audioBuffer = this.audioCtx.createBuffer(this.channels, frameCount, sampleRate);
 
     for (let channelIndex = 0; channelIndex < this.channels; channelIndex += 1) {
       const channelData = audioBuffer.getChannelData(channelIndex);

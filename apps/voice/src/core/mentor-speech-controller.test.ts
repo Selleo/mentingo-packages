@@ -5,11 +5,16 @@ import { MentorSpeechController } from "./mentor-speech-controller";
 type FakeSource = { onended: (() => void) | null; start: () => void; stop: () => void };
 
 const sources: FakeSource[] = [];
+const buffers: { sampleRate: number; duration: number }[] = [];
+const createContext = vi.fn();
 
 class FakeAudioContext {
   state = "running";
   currentTime = 0;
   destination = {};
+  constructor(options?: AudioContextOptions) {
+    createContext(options);
+  }
   createGain() {
     return { gain: { value: 1 }, connect: () => undefined };
   }
@@ -17,14 +22,20 @@ class FakeAudioContext {
     return { fftSize: 256, connect: () => undefined, getFloatTimeDomainData: () => undefined };
   }
   createBuffer(_channels: number, length: number, sampleRate: number) {
-    return { duration: length / sampleRate, getChannelData: () => new Float32Array(length) };
+    const buffer = {
+      sampleRate,
+      duration: length / sampleRate,
+      getChannelData: () => new Float32Array(length),
+    };
+    buffers.push(buffer);
+    return buffer;
   }
   createBufferSource() {
     const source: FakeSource & { buffer: unknown; connect: () => void } = {
       buffer: null,
       onended: null,
       connect: () => undefined,
-      start: () => undefined,
+      start: vi.fn(),
       stop() {
         this.onended?.();
       },
@@ -43,6 +54,8 @@ const pcm = () => new Uint8Array([0, 1, 0, 2]);
 describe("MentorSpeechController", () => {
   beforeEach(() => {
     sources.length = 0;
+    buffers.length = 0;
+    createContext.mockClear();
     vi.stubGlobal("AudioContext", FakeAudioContext);
     vi.stubGlobal("requestAnimationFrame", () => 1);
     vi.stubGlobal("cancelAnimationFrame", () => undefined);
@@ -61,6 +74,70 @@ describe("MentorSpeechController", () => {
     expect(await controller.pushAudio({ turnId: "t2", seq: 2, audio: pcm() })).toBe(false);
     expect(await controller.pushAudio({ turnId: "t1", seq: 2, audio: "AAEAAg==" })).toBe(true);
   });
+
+  it("schedules 24 kHz and 44.1 kHz audio at their real durations in one context", async () => {
+    const controller = new MentorSpeechController();
+    await controller.start();
+    await controller.pushAudio({
+      turnId: "t1",
+      seq: 1,
+      audio: new Uint8Array(24000 * 2),
+      sampleRate: 24000,
+    });
+    await controller.pushAudio({
+      turnId: "t1",
+      seq: 2,
+      audio: new Uint8Array(44100 * 2),
+      sampleRate: 44100,
+    });
+    await controller.pushAudio({
+      turnId: "t1",
+      seq: 3,
+      audio: new Uint8Array(24000 * 2),
+      sampleRate: 24000,
+    });
+
+    expect(buffers.map(({ sampleRate, duration }) => ({ sampleRate, duration }))).toEqual([
+      { sampleRate: 24000, duration: 1 },
+      { sampleRate: 44100, duration: 1 },
+      { sampleRate: 24000, duration: 1 },
+    ]);
+    expect(sources[0]?.start).toHaveBeenCalledWith(0.02);
+    expect(sources[1]?.start).toHaveBeenCalledWith(1.02);
+    expect(sources[2]?.start).toHaveBeenCalledWith(2.02);
+    expect(createContext).toHaveBeenCalledTimes(1);
+    await controller.destroy();
+  });
+
+  it.each([undefined, null])(
+    "uses the configured fallback when sampleRate is %s",
+    async (sampleRate) => {
+      const controller = new MentorSpeechController({ sampleRate: 32000 });
+      await controller.pushAudio({
+        turnId: "t1",
+        seq: 1,
+        audio: new Uint8Array(32000 * 2),
+        sampleRate,
+      });
+      expect(buffers[0]).toMatchObject({ sampleRate: 32000, duration: 1 });
+      await controller.destroy();
+    },
+  );
+
+  it.each([0, -24000, NaN, Infinity])(
+    "rejects invalid rate %s without consuming the sequence",
+    async (sampleRate) => {
+      const controller = new MentorSpeechController();
+      expect(await controller.pushAudio({ turnId: "t1", seq: 1, audio: pcm(), sampleRate })).toBe(
+        false,
+      );
+      expect(controller.activeTurnId).toBeNull();
+      expect(createContext).not.toHaveBeenCalled();
+      expect(await controller.pushAudio({ turnId: "t1", seq: 1, audio: pcm() })).toBe(true);
+      expect(buffers[0]?.sampleRate).toBe(44100);
+      await controller.destroy();
+    },
+  );
 
   it("completes a turn once the server finished and playback drained", async () => {
     const onTurnStarted = vi.fn();
