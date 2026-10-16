@@ -34,6 +34,8 @@ export {
   AiCapability,
   AiCapabilityMode,
   AiCapabilityProvider,
+  TextToSpeechProvider,
+  TTSProvider,
   ReasoningEffort,
   TaskKind,
 } from "./api/generated-api";

@@ -3,6 +3,7 @@ import {
   createLumaClient,
   LUMA_AI_MODEL_DOMAINS,
   LUMA_AI_MODEL_PROFILE_KINDS,
+  TextToSpeechProvider,
 } from "../src/index";
 import type {
   AdminApiKeyAssignmentUpdateOptions,
@@ -14,6 +15,7 @@ const apiKeyUpdate: AdminApiKeyUpdateOptions = {
   organizationId: "organization-123",
   apiKeyId: "api-key-123",
   name: "Updated key",
+  metadata: { textToSpeechProvider: TextToSpeechProvider.Elevenlabs, futureSetting: true },
 };
 
 const assignmentUpdate: AdminApiKeyAssignmentUpdateOptions = {
