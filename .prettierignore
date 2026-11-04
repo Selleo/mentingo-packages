@@ -4,3 +4,6 @@ dist
 pnpm-lock.yaml
 apps/luma-sdk/src/api/generated-api.ts
 apps/luma-sdk/src/api/api-schema-public.json
+
+apps/guide-sdk/src/api/generated-api.ts
+apps/guide-sdk/src/api/api-schema.json

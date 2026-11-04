@@ -1,0 +1,62 @@
+{
+  "name": "@mentingo/guide-sdk",
+  "version": "0.1.0",
+  "description": "Typed client for Mentingo self-onboarding search and video publishing.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/types.ts --format esm,cjs --dts",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm build && tsx --test test/*.test.ts && node --test test/*.test.js",
+    "lint": "eslint .",
+    "generate:client": "swagger-typescript-api -p ./src/api/api-schema.json -o ./src/api --axios --name generated-api.ts --api-class-name GuideApi",
+    "prepack": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "axios": "^1.21.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.2",
+    "@types/node": "25.3.0",
+    "eslint": "9.39.2",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "16.5.0",
+    "swagger-typescript-api": "13.0.12",
+    "tsup": "8.5.1",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.56.0",
+    "@mentingo/typescript-config": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Selleo/mentingo-packages.git",
+    "directory": "apps/guide-sdk"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

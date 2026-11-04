@@ -1,0 +1,2224 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mentingo Helpdesk",
+    "description": "Public version-aware tutorial search and authenticated direct-to-Bunny publishing, verification and indexing.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/admin/finalization-operations/{id}": {
+      "get": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "getFinalizationOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinalizationOperation"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/finalization-operations/{id}/retry": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "retryFinalizationOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinalizationOperation"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/operations/{id}": {
+      "get": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "getMediaOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaOperation"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/operations/{id}/retry": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "retryMediaOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaOperation"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/tutorials/{key}/revisions": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "createDraftRevision",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "description": "Stable tutorial key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Unique create request identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRevisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Draft created, or original response replayed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Revision"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/video-revisions/{id}": {
+      "get": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "getDraftRevision",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Revision"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "updateDraftRevision",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Strong ETag returned by the last read, e.g. quoted 1",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevisionMetadata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Full draft metadata replacement",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Revision"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/video-revisions/{id}/finalize": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "finalizeRevision",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Verification and indexing queued; still private until publish",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinalizationOperation"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/video-revisions/{id}/media": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "prepareRevisionMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareMediaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Durable media preparation accepted; not upload/playback readiness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaOperation"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/video-revisions/{id}/publish": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "publishRevision",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verified media and complete indexes atomically become public",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Revision"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/video-revisions/{id}/upload-authorizations": {
+      "post": {
+        "tags": [
+          "publishing"
+        ],
+        "operationId": "createUploadAuthorization",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One-video TUS grant; expected size/hash are not enforced by its signature",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadAuthorization"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "publisher_key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domains": {
+      "get": {
+        "tags": [
+          "tutorials"
+        ],
+        "operationId": "getGuideDomains",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GuideDomain"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/search": {
+      "post": {
+        "tags": [
+          "search"
+        ],
+        "operationId": "searchGuides",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tutorials/{key}": {
+      "get": {
+        "tags": [
+          "tutorials"
+        ],
+        "operationId": "getGuide",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appVersion",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "features",
+            "in": "query",
+            "description": "Comma-separated enabled public product feature keys.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicTutorial"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/bunny": {
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "operationId": "receiveBunnyWebhook",
+        "parameters": [
+          {
+            "name": "X-BunnyStream-Signature-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-BunnyStream-Signature-Algorithm",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-BunnyStream-Signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Authenticated notification accepted; provider state will be re-fetched"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "operationId": "getLiveness",
+        "responses": {
+          "200": {
+            "description": "Process is alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "operationId": "getReadiness",
+        "responses": {
+          "200": {
+            "description": "Local database is ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Local database is unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Chapter": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "startMs",
+          "endMs",
+          "transcript"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "endMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id": {
+            "type": "string"
+          },
+          "startMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "transcript": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Compatibility": {
+        "type": "object",
+        "required": [
+          "minVersionInclusive"
+        ],
+        "properties": {
+          "maxVersionExclusive": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "minVersionInclusive": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRevisionRequest": {
+        "type": "object",
+        "required": [
+          "metadata"
+        ],
+        "properties": {
+          "expectedPublishedRevisionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Null when there is no published predecessor for this tutorial/language."
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/RevisionMetadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "invalid_request",
+          "invalid_metadata",
+          "unauthorized",
+          "not_found",
+          "conflict",
+          "stale_revision",
+          "idempotency_conflict",
+          "rate_limited",
+          "service_unavailable",
+          "request_too_large",
+          "request_timeout"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FinalizationFailure": {
+        "type": "string",
+        "enum": [
+          "processing",
+          "provider_unavailable",
+          "provider_rejected",
+          "encoding_failed",
+          "integrity_mismatch",
+          "timeline_invalid",
+          "embedding_unavailable",
+          "embedding_rejected",
+          "expired",
+          "stale_revision"
+        ]
+      },
+      "FinalizationOperation": {
+        "type": "object",
+        "required": [
+          "id",
+          "revisionId",
+          "revisionVersion",
+          "status",
+          "attempts",
+          "retryable",
+          "createdAtMs",
+          "updatedAtMs"
+        ],
+        "properties": {
+          "attempts": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAtMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "failureCode": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/FinalizationFailure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "revisionVersion": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationStatus"
+          },
+          "updatedAtMs": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "GuideDomain": {
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "properties": {
+          "key": {
+            "$ref": "#/components/schemas/TutorialDomain"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/HealthStatus"
+          }
+        }
+      },
+      "HealthStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "unavailable"
+        ]
+      },
+      "MediaContentType": {
+        "type": "string",
+        "enum": [
+          "video/mp4"
+        ]
+      },
+      "MediaFailureCode": {
+        "type": "string",
+        "enum": [
+          "provider_unavailable",
+          "provider_rejected",
+          "ambiguous_creation",
+          "provider_conflict",
+          "attempts_exhausted"
+        ]
+      },
+      "MediaOperation": {
+        "type": "object",
+        "required": [
+          "id",
+          "revisionId",
+          "revisionVersion",
+          "status",
+          "attempts",
+          "retryCount",
+          "retryable",
+          "createdAtMs",
+          "updatedAtMs"
+        ],
+        "properties": {
+          "attempts": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAtMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "failureCode": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/MediaFailureCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "retryCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "revisionVersion": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OperationStatus"
+          },
+          "updatedAtMs": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "OperationStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed"
+        ]
+      },
+      "PrepareMediaRequest": {
+        "type": "object",
+        "required": [
+          "expectedSizeBytes",
+          "expectedSha256",
+          "contentType"
+        ],
+        "properties": {
+          "contentType": {
+            "$ref": "#/components/schemas/MediaContentType",
+            "description": "The initial video workflow produces MP4."
+          },
+          "expectedSha256": {
+            "type": "string",
+            "description": "Publisher-provided SHA256. This is not verified by upload authorization."
+          },
+          "expectedSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublicChapter": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "startMs",
+          "endMs"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "endMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "id": {
+            "type": "string"
+          },
+          "startMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "PublicTutorial": {
+        "type": "object",
+        "required": [
+          "key",
+          "revisionId",
+          "domain",
+          "title",
+          "description",
+          "language",
+          "languageFallback",
+          "durationMs",
+          "videoUrl",
+          "posterUrl",
+          "chapters",
+          "pageKeys"
+        ],
+        "properties": {
+          "chapters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicChapter"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/TutorialDomain"
+          },
+          "domainLabel": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "durationMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "key": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languageFallback": {
+            "type": "boolean"
+          },
+          "pageKeys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "posterUrl": {
+            "type": "string"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string"
+          }
+        }
+      },
+      "Revision": {
+        "type": "object",
+        "required": [
+          "id",
+          "tutorialKey",
+          "state",
+          "version",
+          "metadata",
+          "createdAtMs",
+          "updatedAtMs"
+        ],
+        "properties": {
+          "createdAtMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "expectedPublishedRevisionId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/RevisionMetadata"
+          },
+          "state": {
+            "$ref": "#/components/schemas/RevisionState"
+          },
+          "tutorialKey": {
+            "type": "string"
+          },
+          "updatedAtMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Optimistic edit version, also returned as a strong ETag."
+          }
+        }
+      },
+      "RevisionMetadata": {
+        "type": "object",
+        "required": [
+          "domain",
+          "language",
+          "title",
+          "description",
+          "keywords",
+          "pageKeys",
+          "audiences",
+          "featureRequirements",
+          "expectedDurationMs",
+          "compatibility",
+          "source",
+          "chapters"
+        ],
+        "properties": {
+          "audiences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "chapters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Chapter"
+            }
+          },
+          "compatibility": {
+            "$ref": "#/components/schemas/Compatibility"
+          },
+          "description": {
+            "type": "string"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/TutorialDomain"
+          },
+          "domainLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Readable app-area label in this revision's language; omitted by older publishers."
+          },
+          "expectedDurationMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Publisher estimate only; Bunny's measured duration is verified before publication later."
+          },
+          "featureRequirements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "language": {
+            "type": "string"
+          },
+          "pageKeys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceProvenance"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RevisionState": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "published",
+          "withdrawn"
+        ]
+      },
+      "SearchHit": {
+        "type": "object",
+        "required": [
+          "tutorial",
+          "excerpt",
+          "startMs",
+          "endMs",
+          "rankScore"
+        ],
+        "properties": {
+          "chapterId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "endMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "excerpt": {
+            "type": "string"
+          },
+          "rankScore": {
+            "type": "number",
+            "format": "double",
+            "description": "Rank fusion orders results; this value is not a confidence probability."
+          },
+          "startMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tutorial": {
+            "$ref": "#/components/schemas/PublicTutorial"
+          }
+        }
+      },
+      "SearchMode": {
+        "type": "string",
+        "enum": [
+          "keyword",
+          "hybrid",
+          "keyword_fallback",
+          "browse"
+        ]
+      },
+      "SearchQueryMode": {
+        "type": "string",
+        "description": "Requested retrieval strategy, independent from the returned execution/fallback mode.",
+        "enum": [
+          "keyword",
+          "hybrid"
+        ]
+      },
+      "SearchRequest": {
+        "type": "object",
+        "required": [
+          "query",
+          "appVersion",
+          "language"
+        ],
+        "properties": {
+          "appVersion": {
+            "type": "string"
+          },
+          "domain": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TutorialDomain"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "language": {
+            "type": "string"
+          },
+          "limit": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "mode": {
+            "$ref": "#/components/schemas/SearchQueryMode",
+            "description": "Omitted mode preserves hybrid retrieval; keyword never requests or uses vectors.",
+            "default": "hybrid"
+          },
+          "pageKey": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "query": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SearchResponse": {
+        "type": "object",
+        "required": [
+          "mode",
+          "results"
+        ],
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/SearchMode"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchHit"
+            }
+          }
+        }
+      },
+      "SourceProvenance": {
+        "type": "object",
+        "required": [
+          "commit",
+          "workflowRunId",
+          "specPaths"
+        ],
+        "properties": {
+          "commit": {
+            "type": "string"
+          },
+          "specPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "workflowRunId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TutorialDomain": {
+        "type": "string",
+        "description": "Stable app-area identity. New product areas require catalog data, not a service release.",
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+      },
+      "UploadAuthorization": {
+        "type": "object",
+        "required": [
+          "endpoint",
+          "expiresAt",
+          "headers",
+          "metadata",
+          "expectedSizeBytes",
+          "expectedSha256"
+        ],
+        "properties": {
+          "endpoint": {
+            "type": "string"
+          },
+          "expectedSha256": {
+            "type": "string"
+          },
+          "expectedSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "expiresAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "headers": {
+            "$ref": "#/components/schemas/UploadHeaders"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/UploadMetadata"
+          }
+        }
+      },
+      "UploadHeaders": {
+        "type": "object",
+        "required": [
+          "AuthorizationSignature",
+          "AuthorizationExpire",
+          "LibraryId",
+          "VideoId"
+        ],
+        "properties": {
+          "AuthorizationExpire": {
+            "type": "string"
+          },
+          "AuthorizationSignature": {
+            "type": "string"
+          },
+          "LibraryId": {
+            "type": "string"
+          },
+          "VideoId": {
+            "type": "string"
+          }
+        }
+      },
+      "UploadMetadata": {
+        "type": "object",
+        "required": [
+          "filetype",
+          "title"
+        ],
+        "properties": {
+          "filetype": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "publisher_key": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

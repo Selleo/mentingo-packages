@@ -1,0 +1,47 @@
+export { createGuideClient } from "./client";
+export type {
+  GuideClientOptions,
+  GuideCreateRevisionOptions,
+  GuideFinalizeRevisionOptions,
+  GuidePublishRevisionOptions,
+  GuidePrepareMediaOptions,
+  GuideRequestOptions,
+  GuideUpdateRevisionOptions,
+} from "./client";
+export { GuideApiError } from "./errors";
+export {
+  ErrorCode,
+  FinalizationFailure,
+  HealthStatus,
+  MediaContentType,
+  MediaFailureCode,
+  OperationStatus,
+  RevisionState,
+  SearchMode,
+  SearchQueryMode,
+} from "./api/generated-api";
+export type {
+  Chapter,
+  GuideTutorialQuery,
+  GuideDomainQuery,
+  GuideDomain,
+  TutorialDomain,
+  Compatibility,
+  CreateRevisionRequest,
+  ErrorResponse,
+  HealthResponse,
+  FinalizationOperation,
+  MediaOperation,
+  PrepareMediaRequest,
+  PublicChapter,
+  PublicTutorial,
+  Revision,
+  RevisionMetadata,
+  SourceProvenance,
+  SearchHit,
+  SearchRequest,
+  SearchResponse,
+  UploadAuthorization,
+  UploadHeaders,
+  UploadMetadata,
+} from "./types";
