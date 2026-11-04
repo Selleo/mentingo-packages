@@ -1,6 +1,6 @@
 {
   "name": "@mentingo/guide-sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Typed client for Mentingo self-onboarding search and video publishing.",
   "license": "MIT",
   "type": "module",
