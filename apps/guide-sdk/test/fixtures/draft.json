@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "domain": "course-authoring",
+    "language": "en",
+    "title": "Edit your curriculum",
+    "description": "Add lessons to a course curriculum.",
+    "keywords": ["curriculum", "lesson"],
+    "pageKeys": ["admin.course.curriculum"],
+    "audiences": ["course-author"],
+    "featureRequirements": [],
+    "expectedDurationMs": 60000,
+    "compatibility": {
+      "minVersionInclusive": "1.0.0",
+      "maxVersionExclusive": null
+    },
+    "source": {
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "workflowRunId": "123456",
+      "specPaths": ["docs/specs/course-authoring-business-spec.md"]
+    },
+    "chapters": [
+      {
+        "id": "add-lesson",
+        "title": "Add a lesson",
+        "description": "Choose a chapter and add a lesson.",
+        "startMs": 0,
+        "endMs": 60000,
+        "transcript": "Open the curriculum and add a lesson."
+      }
+    ]
+  },
+  "expectedPublishedRevisionId": null
+}

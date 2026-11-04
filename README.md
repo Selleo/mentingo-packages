@@ -1,15 +1,17 @@
 # Mentingo Packages
 
 Reusable libraries for [Mentingo](https://github.com/Selleo/mentingo): UI and voice building
-blocks, plus the Luma API SDK. Each package is versioned and released independently. UI packages
-receive transport from their consuming application; the SDK provides HTTP and realtime clients.
+blocks, plus the Luma and self-onboarding API SDKs. Each package is versioned and released
+independently. UI packages receive transport from their consuming application; the SDKs provide
+typed service clients.
 
 ## Packages
 
-| Package                               | Path            | Description                                                                        |
-| ------------------------------------- | --------------- | ---------------------------------------------------------------------------------- |
-| [`@mentingo/voice`](apps/voice)       | `apps/voice`    | Voice mentor: microphone capture with Silero VAD, mentor playback and session UI   |
-| [`@mentingo/luma-sdk`](apps/luma-sdk) | `apps/luma-sdk` | Luma HTTP API, durable course authoring, administration and realtime audio clients |
+| Package                                 | Path             | Description                                                                        |
+| --------------------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
+| [`@mentingo/voice`](apps/voice)         | `apps/voice`     | Voice mentor: microphone capture with Silero VAD, mentor playback and session UI   |
+| [`@mentingo/luma-sdk`](apps/luma-sdk)   | `apps/luma-sdk`  | Luma HTTP API, durable course authoring, administration and realtime audio clients |
+| [`@mentingo/guide-sdk`](apps/guide-sdk) | `apps/guide-sdk` | Self-onboarding search, chapter lookup and authenticated video publication         |
 
 Every publishable package lives in `apps/`. `packages/` holds internal tooling that is never
 published, currently `@mentingo/typescript-config` with the `base` and `react-library` presets.
