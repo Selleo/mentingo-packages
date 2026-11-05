@@ -194,6 +194,31 @@ field; `hasTextToSpeechApiKey` reports whether one is saved.
 
 For voice mentor flows, use `client.mentor.streamChat({ ..., voiceSessionId })` so streamed mentor text can be forwarded to the active socket session without a separate polling or relay step. Use `client.mentor.generateChat(opts)` only for normal one-shot text responses.
 
+## Native Embeddings
+
+Use the existing AI client to embed text with the API key's configured Custom
+embedding profile:
+
+```ts
+const result = await client.ai.createEmbeddings({
+  texts: ["Customer onboarding policy"],
+  dimensions: 1536,
+});
+// result.embeddings contains the vectors; result.model identifies the profile model.
+```
+
+This calls `POST /api/public/v1/ai/embeddings` with the normal `X-API-Key`
+transport. `dimensions` is optional and must be supported by the configured model.
+Luma validates the returned vector count, dimensions and finite values. The model
+identity comes from the same runtime resolution that produced the vectors.
+Texts-only calls remain valid. Older Luma responses may omit `model`; consumers
+that persist or compare vector spaces must reject missing identity rather than
+assuming a model. Matching dimensions alone do not make embedding spaces compatible.
+
+The public contract is generated from Mentingo AI PR #63. The SDK update adds types
+and transport regressions; published SDK 0.4.0 already forwards these additive body
+and response fields unchanged at runtime. No OpenAI-format embeddings relay is used.
+
 ## Durable Course Authoring
 
 Use `client.authoring` to create/list sessions, read snapshots and events, subscribe to SSE,

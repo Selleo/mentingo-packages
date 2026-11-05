@@ -42,3 +42,14 @@ void apiKeyUpdate;
 void assignmentUpdate;
 void profileKind;
 void client.admin.modelProfiles.list({ organizationId: "organization-123" });
+
+// Native embeddings keep dimensions optional and model metadata backward compatible.
+async function consumeEmbeddings(): Promise<string | null | undefined> {
+  const client = createLumaClient({ apiKey: "synthetic" });
+  await client.ai.createEmbeddings({ texts: ["legacy"] });
+  const result = await client.ai.createEmbeddings({ texts: ["policy"], dimensions: 1536 });
+  const vectors: number[][] = result.embeddings;
+  void vectors;
+  return result.model;
+}
+void consumeEmbeddings;

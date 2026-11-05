@@ -458,6 +458,7 @@
           "Public - Require API Key"
         ],
         "summary": "Create Embeddings With Custom Runtime",
+        "description": "Embeds texts using the API key's Custom embeddings runtime. Optional dimensions requests a positive vector size. The response model identifies the same resolved runtime used to produce the validated vectors.",
         "operationId": "create_embeddings_api_public_v1_ai_embeddings_post",
         "requestBody": {
           "content": {
@@ -547,6 +548,52 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "OrganizationApiKey": []
+          }
+        ]
+      }
+    },
+    "/api/public/v1/ai/openai/chat/completions": {
+      "post": {
+        "tags": [
+          "Public - Require API Key"
+        ],
+        "summary": "OpenAI-Compatible Chat Completions With The AI Mentor Custom Profile",
+        "description": "Relays an OpenAI chat completion, including tools and streaming, to the AI Mentor Custom profile. Core mode is never executed.\n\nAuthorization header required: `X-API-Key: <luma_api_key>`.",
+        "operationId": "chat_completions_api_public_v1_ai_openai_chat_completions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object",
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing or invalid API key."
+          },
+          "409": {
+            "description": "The domain is not assigned to an executable Custom model profile."
+          },
+          "422": {
+            "description": "The request lacks required input."
+          },
+          "502": {
+            "description": "The Custom model provider failed."
           }
         },
         "security": [
@@ -3626,7 +3673,8 @@
               "draft.discard",
               "sources.select",
               "source.refresh",
-              "asset.retry_submission"
+              "asset.retry_submission",
+              "autonomous.fail"
             ],
             "title": "Action"
           },
@@ -3847,6 +3895,15 @@
           "reasoningEffort": {
             "$ref": "#/components/schemas/ReasoningEffort",
             "default": "medium"
+          },
+          "executionMode": {
+            "type": "string",
+            "enum": [
+              "review",
+              "autonomous"
+            ],
+            "title": "Executionmode",
+            "default": "review"
           },
           "context": {
             "additionalProperties": {
@@ -4851,13 +4908,26 @@
             },
             "type": "array",
             "title": "Texts"
+          },
+          "dimensions": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimensions"
           }
         },
         "type": "object",
         "required": [
           "texts"
         ],
-        "title": "EmbeddingsRequest"
+        "title": "EmbeddingsRequest",
+        "description": "Embed input text with an optional explicitly requested positive vector size."
       },
       "EmbeddingsResponse": {
         "properties": {
@@ -4870,13 +4940,25 @@
             },
             "type": "array",
             "title": "Embeddings"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
           }
         },
         "type": "object",
         "required": [
           "embeddings"
         ],
-        "title": "EmbeddingsResponse"
+        "title": "EmbeddingsResponse",
+        "description": "Return vectors plus the resolved model sent to the provider for this exact call."
       },
       "Event": {
         "properties": {
@@ -6200,6 +6282,30 @@
             },
             "type": "array",
             "title": "Omitoptionalassetids"
+          },
+          "autonomousRequestId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autonomousrequestid"
+          },
+          "autonomousControlEpoch": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autonomouscontrolepoch"
           }
         },
         "additionalProperties": false,

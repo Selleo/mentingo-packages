@@ -935,7 +935,8 @@ export interface AuthoringCommand {
     | "draft.discard"
     | "sources.select"
     | "source.refresh"
-    | "asset.retry_submission";
+    | "asset.retry_submission"
+    | "autonomous.fail";
   request?: AuthoringRequest | null;
   /** Targetid */
   targetId?: string | null;
@@ -1014,6 +1015,11 @@ export interface AuthoringRequest {
    * @default "medium"
    */
   reasoningEffort?: ReasoningEffort;
+  /**
+   * Executionmode
+   * @default "review"
+   */
+  executionMode?: "review" | "autonomous";
   /** Context */
   context?: Record<string, JsonValue>;
   /**
@@ -1530,16 +1536,26 @@ export interface DragOption {
   displayOrder: number;
 }
 
-/** EmbeddingsRequest */
+/**
+ * EmbeddingsRequest
+ * Embed input text with an optional explicitly requested positive vector size.
+ */
 export interface EmbeddingsRequest {
   /** Texts */
   texts: string[];
+  /** Dimensions */
+  dimensions?: number | null;
 }
 
-/** EmbeddingsResponse */
+/**
+ * EmbeddingsResponse
+ * Return vectors plus the resolved model sent to the provider for this exact call.
+ */
 export interface EmbeddingsResponse {
   /** Embeddings */
   embeddings: number[][];
+  /** Model */
+  model?: string | null;
 }
 
 /**
@@ -2112,6 +2128,10 @@ export interface PrepareExport {
   proposalIds: string[];
   /** Omitoptionalassetids */
   omitOptionalAssetIds?: string[];
+  /** Autonomousrequestid */
+  autonomousRequestId?: string | null;
+  /** Autonomouscontrolepoch */
+  autonomousControlEpoch?: number | null;
 }
 
 /**
@@ -3347,7 +3367,7 @@ export class API<
       }),
 
     /**
-     * No description
+     * @description Embeds texts using the API key's Custom embeddings runtime. Optional dimensions requests a positive vector size. The response model identifies the same resolved runtime used to produce the validated vectors.
      *
      * @tags Public - Require API Key
      * @name CreateEmbeddingsApiPublicV1AiEmbeddingsPost
@@ -3389,6 +3409,28 @@ export class API<
         secure: true,
         type: ContentType.FormData,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Relays an OpenAI chat completion, including tools and streaming, to the AI Mentor Custom profile. Core mode is never executed. Authorization header required: `X-API-Key: <luma_api_key>`.
+     *
+     * @tags Public - Require API Key
+     * @name ChatCompletionsApiPublicV1AiOpenaiChatCompletionsPost
+     * @summary OpenAI-Compatible Chat Completions With The AI Mentor Custom Profile
+     * @request POST:/api/public/v1/ai/openai/chat/completions
+     * @secure
+     */
+    chatCompletionsApiPublicV1AiOpenaiChatCompletionsPost: (
+      data: Record<string, JsonValue>,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, void>({
+        path: `/api/public/v1/ai/openai/chat/completions`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
