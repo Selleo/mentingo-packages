@@ -8,6 +8,7 @@ export const LUMA_AI_MODEL_DOMAINS = {
   AI_JUDGE_CONFIGURATION_VALIDATOR: AiModelDomain.AiJudgeConfigurationValidator,
   TRANSLATIONS: AiModelDomain.Translations,
   COURSE_GENERATION: AiModelDomain.CourseGeneration,
+  COURSE_GENERATION_VISION: AiModelDomain.CourseGenerationVision,
   COURSE_GENERATION_VISUAL_ASSETS: AiModelDomain.CourseGenerationVisualAssets,
   COURSE_GENERATION_EMBEDDINGS: AiModelDomain.CourseGenerationEmbeddings,
   EMBEDDINGS: AiModelDomain.Embeddings,

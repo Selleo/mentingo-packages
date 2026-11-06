@@ -18,6 +18,11 @@ import type {
   JudgeResponse,
   MentorChatRequest,
   MentorChatResponse,
+  NativeChatResult,
+  NativeTextDelta,
+  NativeToolCallEvent,
+  NativeFinishEvent,
+  NativeErrorEvent,
   PublicConfigurationResponse,
   StructuredGenerationRequest,
   TranscriptionResponse,
@@ -28,6 +33,15 @@ export type {
   MentorChatRequest,
   MentorChatResponse,
   PublicAiMessage,
+  NativeChatResult,
+  NativeChatTool,
+  NativeChatUsage,
+  NativeToolCall,
+  NativeTextDelta,
+  NativeToolCallEvent,
+  NativeFinishEvent,
+  NativeErrorEvent,
+  NamedToolChoice,
   PublicConfigurationResponse,
 } from "./api/generated-api";
 export {
@@ -45,7 +59,10 @@ export type MentorChatOptions = MentorChatRequest;
 export type MentorStreamRequestOptions = {
   signal?: AbortSignal;
 };
-export type MentorGenerateChatResponse = MentorChatResponse;
+export type MentorGenerateChatResponse = MentorChatResponse | NativeChatResult;
+/** Native NDJSON records returned by event-mode Mentor chat. */
+export type MentorChatEvent =
+  NativeTextDelta | NativeToolCallEvent | NativeFinishEvent | NativeErrorEvent;
 export type MentorJudgeOptions = StructuredGenerationRequest;
 export type MentorJudgeResponse = JudgeResponse;
 export type GenerateAiJudgeConfigurationOptions = StructuredGenerationRequest;
@@ -89,6 +106,7 @@ export const LUMA_AI_CAPABILITY_PROVIDERS = {
 
 export const LUMA_AI_CAPABILITIES = {
   COURSE_GENERATION: AiCapability.CourseGeneration,
+  COURSE_GENERATION_VISION: AiCapability.CourseGenerationVision,
   COURSE_GENERATION_VISUAL_ASSETS: AiCapability.CourseGenerationVisualAssets,
   COURSE_GENERATION_EMBEDDINGS: AiCapability.CourseGenerationEmbeddings,
   AI_MENTOR_CHAT: AiCapability.AiMentorChat,
