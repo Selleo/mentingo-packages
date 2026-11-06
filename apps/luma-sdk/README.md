@@ -10,11 +10,11 @@ It provides two separate clients:
 ## Installation
 
 ```bash
-pnpm add @mentingo/luma-sdk
+pnpm add @mentingo/luma-sdk@0.4.1
 # or
-npm install @mentingo/luma-sdk
+npm install @mentingo/luma-sdk@0.4.1
 # or
-yarn add @mentingo/luma-sdk
+yarn add @mentingo/luma-sdk@0.4.1
 ```
 
 ## Quick Start (HTTP)
@@ -233,7 +233,7 @@ Generation uses the existing `/api/public/v1/ai/mentor/chat/generate` route.
 Calls omitting tool/event options retain the existing `{ message }` generation
 response and plain-text streaming behavior. `streamChat` already supports request
 cancellation in SDK 0.4.0; the optional generation `signal` parameter is added by
-this release. Model execution, provider availability and fallback policy stay with
+SDK 0.4.1. Model execution, provider availability and fallback policy stay with
 Luma and the consuming application. Deploy the matching Luma native tool-chat
 contract before enabling event-mode callers.
 
