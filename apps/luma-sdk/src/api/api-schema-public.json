@@ -41,6 +41,7 @@
           "Public - Require API Key"
         ],
         "summary": "Stream Mentor Chat With Custom Runtime",
+        "description": "Existing text stream by default; streamFormat=events opts into newline-delimited native text, complete tool-call, finish and sanitized error events. Tools execute in the caller, never in Luma.",
         "operationId": "mentor_chat_api_public_v1_ai_mentor_chat_post",
         "requestBody": {
           "content": {
@@ -54,7 +55,43 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/NativeTextDelta"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeToolCallEvent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeFinishEvent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NativeErrorEvent"
+                    }
+                  ],
+                  "type": "string",
+                  "title": "Response 200 Mentor Chat Api Public V1 Ai Mentor Chat Post",
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "text-delta": "#/components/schemas/NativeTextDelta",
+                      "tool-call": "#/components/schemas/NativeToolCallEvent",
+                      "finish": "#/components/schemas/NativeFinishEvent",
+                      "error": "#/components/schemas/NativeErrorEvent"
+                    }
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing or invalid API key."
@@ -103,7 +140,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MentorChatResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/NativeChatResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MentorChatResponse"
+                    }
+                  ],
+                  "title": "Response Generate Mentor Chat Api Public V1 Ai Mentor Chat Generate Post"
                 }
               }
             }
@@ -458,6 +503,7 @@
           "Public - Require API Key"
         ],
         "summary": "Create Embeddings With Custom Runtime",
+        "description": "Embeds texts using the API key's Custom embeddings runtime. Optional dimensions requests a positive vector size. The response model identifies the same resolved runtime used to produce the validated vectors.",
         "operationId": "create_embeddings_api_public_v1_ai_embeddings_post",
         "requestBody": {
           "content": {
@@ -1981,6 +2027,7 @@
         "type": "string",
         "enum": [
           "courseGeneration",
+          "courseGenerationVision",
           "courseGenerationVisualAssets",
           "courseGenerationEmbeddings",
           "aiMentorChat",
@@ -2806,6 +2853,7 @@
           "aiJudgeConfigurationValidator",
           "translations",
           "courseGeneration",
+          "courseGenerationVision",
           "courseGenerationVisualAssets",
           "courseGenerationEmbeddings",
           "embeddings",
@@ -3626,7 +3674,8 @@
               "draft.discard",
               "sources.select",
               "source.refresh",
-              "asset.retry_submission"
+              "asset.retry_submission",
+              "autonomous.fail"
             ],
             "title": "Action"
           },
@@ -3747,6 +3796,9 @@
                       "$ref": "#/components/schemas/BlockReplace"
                     },
                     {
+                      "$ref": "#/components/schemas/LessonImageInsert"
+                    },
+                    {
                       "$ref": "#/components/schemas/MetadataUpdate"
                     },
                     {
@@ -3774,6 +3826,7 @@
                       "lesson.block.replace": "#/components/schemas/BlockReplace",
                       "lesson.create": "#/components/schemas/LessonWrite-Input",
                       "lesson.delete": "#/components/schemas/DeleteOperation",
+                      "lesson.image.insert": "#/components/schemas/LessonImageInsert",
                       "lesson.metadata.update": "#/components/schemas/LessonMetadataUpdate",
                       "lesson.reorder": "#/components/schemas/ReorderOperation",
                       "lesson.update": "#/components/schemas/LessonWrite-Input"
@@ -3847,6 +3900,15 @@
           "reasoningEffort": {
             "$ref": "#/components/schemas/ReasoningEffort",
             "default": "medium"
+          },
+          "executionMode": {
+            "type": "string",
+            "enum": [
+              "review",
+              "autonomous"
+            ],
+            "title": "Executionmode",
+            "default": "review"
           },
           "context": {
             "additionalProperties": {
@@ -4851,13 +4913,26 @@
             },
             "type": "array",
             "title": "Texts"
+          },
+          "dimensions": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimensions"
           }
         },
         "type": "object",
         "required": [
           "texts"
         ],
-        "title": "EmbeddingsRequest"
+        "title": "EmbeddingsRequest",
+        "description": "Embed input text with an optional explicitly requested positive vector size."
       },
       "EmbeddingsResponse": {
         "properties": {
@@ -4870,13 +4945,25 @@
             },
             "type": "array",
             "title": "Embeddings"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
           }
         },
         "type": "object",
         "required": [
           "embeddings"
         ],
-        "title": "EmbeddingsResponse"
+        "title": "EmbeddingsResponse",
+        "description": "Return vectors plus the resolved model sent to the provider for this exact call."
       },
       "Event": {
         "properties": {
@@ -5042,6 +5129,9 @@
                   "$ref": "#/components/schemas/BlockReplace"
                 },
                 {
+                  "$ref": "#/components/schemas/LessonImageInsert"
+                },
+                {
                   "$ref": "#/components/schemas/MetadataUpdate"
                 },
                 {
@@ -5069,6 +5159,7 @@
                   "lesson.block.replace": "#/components/schemas/BlockReplace",
                   "lesson.create": "#/components/schemas/LessonWrite-Output",
                   "lesson.delete": "#/components/schemas/DeleteOperation",
+                  "lesson.image.insert": "#/components/schemas/LessonImageInsert",
                   "lesson.metadata.update": "#/components/schemas/LessonMetadataUpdate",
                   "lesson.reorder": "#/components/schemas/ReorderOperation",
                   "lesson.update": "#/components/schemas/LessonWrite-Output"
@@ -5151,6 +5242,57 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ImageInsertPayload": {
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assetid"
+          },
+          "anchorBlockId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Anchorblockid"
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "before",
+              "after"
+            ],
+            "title": "Position"
+          },
+          "caption": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caption"
+          },
+          "altText": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Alttext"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "assetId",
+          "anchorBlockId",
+          "position",
+          "altText"
+        ],
+        "title": "ImageInsertPayload",
+        "description": "Choose one image and existing block without accepting replacement lesson prose."
+      },
       "JsonValue": {},
       "JudgeCriterionResult": {
         "properties": {
@@ -5224,6 +5366,80 @@
           "learnerSafeFeedback"
         ],
         "title": "JudgeTriggeredBlockingError"
+      },
+      "LessonImageInsert": {
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Operationid"
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Targetid"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "pl",
+              "de",
+              "lt",
+              "cs",
+              "es",
+              "fr"
+            ],
+            "title": "Language"
+          },
+          "baselineHash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baselinehash"
+          },
+          "dependencies": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Dependencies"
+          },
+          "fieldBaselines": {
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "type": "object",
+            "title": "Fieldbaselines"
+          },
+          "type": {
+            "type": "string",
+            "const": "lesson.image.insert",
+            "title": "Type",
+            "default": "lesson.image.insert"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ImageInsertPayload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operationId",
+          "targetId",
+          "language",
+          "payload"
+        ],
+        "title": "LessonImageInsert",
+        "description": "Insert an image beside a trusted existing block under the whole-lesson baseline."
       },
       "LessonMetadataPayload": {
         "properties": {
@@ -5574,13 +5790,89 @@
               }
             ],
             "title": "Voicesessionid"
+          },
+          "streamFormat": {
+            "type": "string",
+            "enum": [
+              "text",
+              "events"
+            ],
+            "title": "Streamformat",
+            "default": "text"
+          },
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/NativeChatTool"
+            },
+            "type": "array",
+            "maxItems": 128,
+            "title": "Tools"
+          },
+          "toolChoice": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "none",
+                  "required"
+                ]
+              },
+              {
+                "$ref": "#/components/schemas/NamedToolChoice"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Toolchoice"
+          },
+          "maxOutputTokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxoutputtokens"
+          },
+          "topP": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topp"
+          },
+          "stopSequences": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stopsequences"
           }
         },
         "type": "object",
         "required": [
           "messages"
         ],
-        "title": "MentorChatRequest"
+        "title": "MentorChatRequest",
+        "description": "Opt in to native assistant metadata without changing existing text/voice calls."
       },
       "MentorChatResponse": {
         "properties": {
@@ -5593,7 +5885,8 @@
         "required": [
           "message"
         ],
-        "title": "MentorChatResponse"
+        "title": "MentorChatResponse",
+        "description": "Retain the exact legacy message response for text-only callers."
       },
       "MentorLesson-Input": {
         "properties": {
@@ -5985,6 +6278,268 @@
         "title": "MetadataUpdate",
         "description": "Patch course metadata under the operation baseline fence."
       },
+      "NamedToolChoice": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "NamedToolChoice",
+        "description": "Select one of the tools declared on this invocation."
+      },
+      "NativeChatResult": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "toolCalls": {
+            "items": {
+              "$ref": "#/components/schemas/NativeToolCall"
+            },
+            "type": "array",
+            "title": "Toolcalls"
+          },
+          "finishReason": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "length",
+              "tool-calls",
+              "content-filter",
+              "other"
+            ],
+            "title": "Finishreason"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NativeChatUsage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "toolCalls",
+          "finishReason"
+        ],
+        "title": "NativeChatResult",
+        "description": "Return lossless assistant output when a request opts in to native tool chat."
+      },
+      "NativeChatTool": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "inputSchema": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Inputschema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "inputSchema"
+        ],
+        "title": "NativeChatTool",
+        "description": "Describe a caller-owned function; Luma asks for calls but never executes it."
+      },
+      "NativeChatUsage": {
+        "properties": {
+          "inputTokens": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Inputtokens"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Outputtokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inputTokens",
+          "outputTokens"
+        ],
+        "title": "NativeChatUsage",
+        "description": "Report provider token counts only when they are available."
+      },
+      "NativeErrorEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "error",
+            "title": "Type"
+          },
+          "code": {
+            "type": "string",
+            "const": "provider_request_failed",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "code"
+        ],
+        "title": "NativeErrorEvent",
+        "description": "Signal a sanitized mid-stream failure without leaking upstream payloads."
+      },
+      "NativeFinishEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "finish",
+            "title": "Type"
+          },
+          "finishReason": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "length",
+              "tool-calls",
+              "content-filter",
+              "other"
+            ],
+            "title": "Finishreason"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NativeChatUsage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "finishReason"
+        ],
+        "title": "NativeFinishEvent",
+        "description": "Close a successful native stream with a reason and optional usage."
+      },
+      "NativeTextDelta": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "text-delta",
+            "title": "Type"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "text"
+        ],
+        "title": "NativeTextDelta",
+        "description": "Stream visible text without provider-specific wire objects."
+      },
+      "NativeToolCall": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "arguments": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Arguments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "arguments"
+        ],
+        "title": "NativeToolCall",
+        "description": "Carry one complete validated function call with JSON object arguments."
+      },
+      "NativeToolCallEvent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "arguments": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Arguments"
+          },
+          "type": {
+            "type": "string",
+            "const": "tool-call",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "arguments",
+          "type"
+        ],
+        "title": "NativeToolCallEvent",
+        "description": "Publish only a complete function call after validating its arguments."
+      },
       "OpenTextSettings": {
         "properties": {
           "minimumCharacters": {
@@ -6200,6 +6755,35 @@
             },
             "type": "array",
             "title": "Omitoptionalassetids"
+          },
+          "manualApply": {
+            "type": "boolean",
+            "title": "Manualapply",
+            "default": false
+          },
+          "autonomousRequestId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autonomousrequestid"
+          },
+          "autonomousControlEpoch": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autonomouscontrolepoch"
           }
         },
         "additionalProperties": false,
@@ -6280,13 +6864,39 @@
             "enum": [
               "system",
               "user",
-              "assistant"
+              "assistant",
+              "tool"
             ],
             "title": "Role"
           },
           "content": {
             "type": "string",
             "title": "Content"
+          },
+          "toolCalls": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/NativeToolCall"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Toolcalls"
+          },
+          "toolCallId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Toolcallid"
           }
         },
         "type": "object",
@@ -6294,7 +6904,8 @@
           "role",
           "content"
         ],
-        "title": "PublicAiMessage"
+        "title": "PublicAiMessage",
+        "description": "Preserve native text messages and carry assistant calls and their tool results."
       },
       "PublicConfigurationResponse": {
         "properties": {
@@ -7585,6 +8196,7 @@
           "lesson",
           "edit",
           "source",
+          "source_vision",
           "asset",
           "course_review"
         ],

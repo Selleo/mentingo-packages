@@ -67,6 +67,7 @@ export enum TaskKind {
   Lesson = "lesson",
   Edit = "edit",
   Source = "source",
+  SourceVision = "source_vision",
   Asset = "asset",
   CourseReview = "course_review",
 }
@@ -138,6 +139,7 @@ export enum AiModelDomain {
   AiJudgeConfigurationValidator = "aiJudgeConfigurationValidator",
   Translations = "translations",
   CourseGeneration = "courseGeneration",
+  CourseGenerationVision = "courseGenerationVision",
   CourseGenerationVisualAssets = "courseGenerationVisualAssets",
   CourseGenerationEmbeddings = "courseGenerationEmbeddings",
   Embeddings = "embeddings",
@@ -191,6 +193,7 @@ export enum AiCapabilityMode {
 /** AiCapability */
 export enum AiCapability {
   CourseGeneration = "courseGeneration",
+  CourseGenerationVision = "courseGenerationVision",
   CourseGenerationVisualAssets = "courseGenerationVisualAssets",
   CourseGenerationEmbeddings = "courseGenerationEmbeddings",
   AiMentorChat = "aiMentorChat",
@@ -935,7 +938,8 @@ export interface AuthoringCommand {
     | "draft.discard"
     | "sources.select"
     | "source.refresh"
-    | "asset.retry_submission";
+    | "asset.retry_submission"
+    | "autonomous.fail";
   request?: AuthoringRequest | null;
   /** Targetid */
   targetId?: string | null;
@@ -982,6 +986,9 @@ export interface AuthoringCommand {
             type: "lesson.delete";
           } & DeleteOperation)
         | ({
+            type: "lesson.image.insert";
+          } & LessonImageInsert)
+        | ({
             type: "lesson.metadata.update";
           } & LessonMetadataUpdate)
         | ({
@@ -1014,6 +1021,11 @@ export interface AuthoringRequest {
    * @default "medium"
    */
   reasoningEffort?: ReasoningEffort;
+  /**
+   * Executionmode
+   * @default "review"
+   */
+  executionMode?: "review" | "autonomous";
   /** Context */
   context?: Record<string, JsonValue>;
   /**
@@ -1530,16 +1542,26 @@ export interface DragOption {
   displayOrder: number;
 }
 
-/** EmbeddingsRequest */
+/**
+ * EmbeddingsRequest
+ * Embed input text with an optional explicitly requested positive vector size.
+ */
 export interface EmbeddingsRequest {
   /** Texts */
   texts: string[];
+  /** Dimensions */
+  dimensions?: number | null;
 }
 
-/** EmbeddingsResponse */
+/**
+ * EmbeddingsResponse
+ * Return vectors plus the resolved model sent to the provider for this exact call.
+ */
 export interface EmbeddingsResponse {
   /** Embeddings */
   embeddings: number[][];
+  /** Model */
+  model?: string | null;
 }
 
 /**
@@ -1669,6 +1691,9 @@ export interface FrozenExport {
         type: "lesson.delete";
       } & DeleteOperation)
     | ({
+        type: "lesson.image.insert";
+      } & LessonImageInsert)
+    | ({
         type: "lesson.metadata.update";
       } & LessonMetadataUpdate)
     | ({
@@ -1700,6 +1725,33 @@ export interface GenerateAiMentorConfigurationRequest {
 export interface HTTPValidationError {
   /** Detail */
   detail?: ValidationError[];
+}
+
+/**
+ * ImageInsertPayload
+ * Choose one image and existing block without accepting replacement lesson prose.
+ */
+export interface ImageInsertPayload {
+  /**
+   * Assetid
+   * @format uuid
+   */
+  assetId: string;
+  /**
+   * Anchorblockid
+   * @format uuid
+   */
+  anchorBlockId: string;
+  /** Position */
+  position: "before" | "after";
+  /** Caption */
+  caption?: string | null;
+  /**
+   * Alttext
+   * @minLength 1
+   * @maxLength 1000
+   */
+  altText: string;
 }
 
 export type JsonValue = any;
@@ -1743,6 +1795,38 @@ export interface JudgeTriggeredBlockingError {
    * @minLength 1
    */
   learnerSafeFeedback: string;
+}
+
+/**
+ * LessonImageInsert
+ * Insert an image beside a trusted existing block under the whole-lesson baseline.
+ */
+export interface LessonImageInsert {
+  /**
+   * Operationid
+   * @format uuid
+   */
+  operationId: string;
+  /**
+   * Targetid
+   * @format uuid
+   */
+  targetId: string;
+  /** Language */
+  language: "en" | "pl" | "de" | "lt" | "cs" | "es" | "fr";
+  /** Baselinehash */
+  baselineHash?: string | null;
+  /** Dependencies */
+  dependencies?: string[];
+  /** Fieldbaselines */
+  fieldBaselines?: Record<string, string>;
+  /**
+   * Type
+   * @default "lesson.image.insert"
+   */
+  type?: "lesson.image.insert";
+  /** Choose one image and existing block without accepting replacement lesson prose. */
+  payload: ImageInsertPayload;
 }
 
 /**
@@ -1878,7 +1962,10 @@ export interface LessonWriteOutput {
       } & QuizLessonOutput);
 }
 
-/** MentorChatRequest */
+/**
+ * MentorChatRequest
+ * Opt in to native assistant metadata without changing existing text/voice calls.
+ */
 export interface MentorChatRequest {
   /** Messages */
   messages: PublicAiMessage[];
@@ -1886,9 +1973,30 @@ export interface MentorChatRequest {
   temperature?: number | null;
   /** Voicesessionid */
   voiceSessionId?: string | null;
+  /**
+   * Streamformat
+   * @default "text"
+   */
+  streamFormat?: "text" | "events";
+  /**
+   * Tools
+   * @maxItems 128
+   */
+  tools?: NativeChatTool[];
+  /** Toolchoice */
+  toolChoice?: "auto" | "none" | "required" | NamedToolChoice | null;
+  /** Maxoutputtokens */
+  maxOutputTokens?: number | null;
+  /** Topp */
+  topP?: number | null;
+  /** Stopsequences */
+  stopSequences?: string[] | null;
 }
 
-/** MentorChatResponse */
+/**
+ * MentorChatResponse
+ * Retain the exact legacy message response for text-only callers.
+ */
 export interface MentorChatResponse {
   /** Message */
   message: string;
@@ -2016,6 +2124,145 @@ export interface MetadataUpdate {
 }
 
 /**
+ * NamedToolChoice
+ * Select one of the tools declared on this invocation.
+ */
+export interface NamedToolChoice {
+  /**
+   * Name
+   * @minLength 1
+   * @maxLength 128
+   */
+  name: string;
+}
+
+/**
+ * NativeChatResult
+ * Return lossless assistant output when a request opts in to native tool chat.
+ */
+export interface NativeChatResult {
+  /** Message */
+  message: string;
+  /** Toolcalls */
+  toolCalls: NativeToolCall[];
+  /** Finishreason */
+  finishReason: "stop" | "length" | "tool-calls" | "content-filter" | "other";
+  usage?: NativeChatUsage | null;
+}
+
+/**
+ * NativeChatTool
+ * Describe a caller-owned function; Luma asks for calls but never executes it.
+ */
+export interface NativeChatTool {
+  /**
+   * Name
+   * @minLength 1
+   * @maxLength 128
+   */
+  name: string;
+  /** Description */
+  description?: string | null;
+  /** Inputschema */
+  inputSchema: Record<string, JsonValue>;
+}
+
+/**
+ * NativeChatUsage
+ * Report provider token counts only when they are available.
+ */
+export interface NativeChatUsage {
+  /**
+   * Inputtokens
+   * @min 0
+   */
+  inputTokens: number;
+  /**
+   * Outputtokens
+   * @min 0
+   */
+  outputTokens: number;
+}
+
+/**
+ * NativeErrorEvent
+ * Signal a sanitized mid-stream failure without leaking upstream payloads.
+ */
+export interface NativeErrorEvent {
+  /** Type */
+  type: "error";
+  /** Code */
+  code: "provider_request_failed";
+}
+
+/**
+ * NativeFinishEvent
+ * Close a successful native stream with a reason and optional usage.
+ */
+export interface NativeFinishEvent {
+  /** Type */
+  type: "finish";
+  /** Finishreason */
+  finishReason: "stop" | "length" | "tool-calls" | "content-filter" | "other";
+  usage?: NativeChatUsage | null;
+}
+
+/**
+ * NativeTextDelta
+ * Stream visible text without provider-specific wire objects.
+ */
+export interface NativeTextDelta {
+  /** Type */
+  type: "text-delta";
+  /** Text */
+  text: string;
+}
+
+/**
+ * NativeToolCall
+ * Carry one complete validated function call with JSON object arguments.
+ */
+export interface NativeToolCall {
+  /**
+   * Id
+   * @minLength 1
+   * @maxLength 256
+   */
+  id: string;
+  /**
+   * Name
+   * @minLength 1
+   * @maxLength 128
+   */
+  name: string;
+  /** Arguments */
+  arguments: Record<string, JsonValue>;
+}
+
+/**
+ * NativeToolCallEvent
+ * Publish only a complete function call after validating its arguments.
+ */
+export interface NativeToolCallEvent {
+  /**
+   * Id
+   * @minLength 1
+   * @maxLength 256
+   */
+  id: string;
+  /**
+   * Name
+   * @minLength 1
+   * @maxLength 128
+   */
+  name: string;
+  /** Arguments */
+  arguments: Record<string, JsonValue>;
+  /** Type */
+  type: "tool-call";
+}
+
+/**
  * OpenTextSettings
  * Constrain and guide manually reviewed free-text answers.
  */
@@ -2112,6 +2359,15 @@ export interface PrepareExport {
   proposalIds: string[];
   /** Omitoptionalassetids */
   omitOptionalAssetIds?: string[];
+  /**
+   * Manualapply
+   * @default false
+   */
+  manualApply?: boolean;
+  /** Autonomousrequestid */
+  autonomousRequestId?: string | null;
+  /** Autonomouscontrolepoch */
+  autonomousControlEpoch?: number | null;
 }
 
 /**
@@ -2161,12 +2417,19 @@ export interface ProposalReviewDecision {
   acceptQualityConcerns?: boolean;
 }
 
-/** PublicAiMessage */
+/**
+ * PublicAiMessage
+ * Preserve native text messages and carry assistant calls and their tool results.
+ */
 export interface PublicAiMessage {
   /** Role */
-  role: "system" | "user" | "assistant";
+  role: "system" | "user" | "assistant" | "tool";
   /** Content */
   content: string;
+  /** Toolcalls */
+  toolCalls?: NativeToolCall[] | null;
+  /** Toolcallid */
+  toolCallId?: string | null;
 }
 
 /** PublicConfigurationResponse */
@@ -2947,6 +3210,13 @@ export interface WorkspaceRecord {
   payload: Record<string, JsonValue>;
 }
 
+/** Response 200 Mentor Chat Api Public V1 Ai Mentor Chat Post */
+type BaseNull = string;
+
+type BaseNullTypeMapping<Key, Type> = {
+  type: Key;
+} & Type;
+
 import type {
   AxiosInstance,
   AxiosRequestConfig,
@@ -3151,7 +3421,7 @@ export class API<
       }),
 
     /**
-     * No description
+     * @description Existing text stream by default; streamFormat=events opts into newline-delimited native text, complete tool-call, finish and sanitized error events. Tools execute in the caller, never in Luma.
      *
      * @tags Public - Require API Key
      * @name MentorChatApiPublicV1AiMentorChatPost
@@ -3163,7 +3433,16 @@ export class API<
       data: MentorChatRequest,
       params: RequestParams = {},
     ) =>
-      this.request<void, void | HTTPValidationError>({
+      this.request<
+        BaseNull &
+          (
+            | BaseNullTypeMapping<"text-delta", NativeTextDelta>
+            | BaseNullTypeMapping<"tool-call", NativeToolCallEvent>
+            | BaseNullTypeMapping<"finish", NativeFinishEvent>
+            | BaseNullTypeMapping<"error", NativeErrorEvent>
+          ),
+        void | HTTPValidationError
+      >({
         path: `/api/public/v1/ai/mentor/chat`,
         method: "POST",
         body: data,
@@ -3185,7 +3464,10 @@ export class API<
       data: MentorChatRequest,
       params: RequestParams = {},
     ) =>
-      this.request<MentorChatResponse, void | HTTPValidationError>({
+      this.request<
+        NativeChatResult | MentorChatResponse,
+        void | HTTPValidationError
+      >({
         path: `/api/public/v1/ai/mentor/chat/generate`,
         method: "POST",
         body: data,
@@ -3347,7 +3629,7 @@ export class API<
       }),
 
     /**
-     * No description
+     * @description Embeds texts using the API key's Custom embeddings runtime. Optional dimensions requests a positive vector size. The response model identifies the same resolved runtime used to produce the validated vectors.
      *
      * @tags Public - Require API Key
      * @name CreateEmbeddingsApiPublicV1AiEmbeddingsPost

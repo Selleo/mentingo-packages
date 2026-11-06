@@ -20,6 +20,7 @@ import {
 export class LumaAiClient {
   constructor(private readonly apiClient: API<unknown>) {}
 
+  /** Embed raw text through the native API; optional size and model provenance share this contract. */
   async createEmbeddings(opts: CreateEmbeddingsOptions): Promise<CreateEmbeddingsResponse> {
     const response = await this.apiClient.api.createEmbeddingsApiPublicV1AiEmbeddingsPost(opts);
 

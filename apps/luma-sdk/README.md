@@ -154,7 +154,7 @@ Namespaces:
 
 - `client.mentor.streamChat(opts)` - stream mentor chat through the public custom-runtime endpoint. Pass `voiceSessionId` for voice mentor sessions so Luma can forward mentor text directly to the voice session.
 - `client.mentor.chat(opts)` - alias for `client.mentor.streamChat(opts)`.
-- `client.mentor.generateChat(opts)` - generate a non-stream mentor chat response.
+- `client.mentor.generateChat(opts, { signal? })` - generate a native non-stream chat response, with optional cancellation.
 - `client.mentor.judge(opts)`
 - `client.ai.createEmbeddings(opts)`
 - `client.ai.generateJudgeConfiguration(opts)`
@@ -192,7 +192,75 @@ routing. API key settings use extensible non-secret metadata, for example
 to `null` removes it. Credentials remain in the write-only `textToSpeechApiKey`
 field; `hasTextToSpeechApiKey` reports whether one is saved.
 
-For voice mentor flows, use `client.mentor.streamChat({ ..., voiceSessionId })` so streamed mentor text can be forwarded to the active socket session without a separate polling or relay step. Use `client.mentor.generateChat(opts)` only for normal one-shot text responses.
+For voice mentor flows, use `client.mentor.streamChat({ ..., voiceSessionId })` so streamed mentor text can be forwarded to the active socket session without a separate polling or relay step. Use `client.mentor.generateChat(opts)` for normal one-shot text responses. Tool-capable assistant calls use the native options below and do not attach a voice session.
+
+## Native Tool-Capable Chat
+
+The existing Mentor client also carries assistant tool calls through Luma's native
+chat API. Luma resolves the API key's configured Custom chat profile; the SDK does
+not choose a vendor or contact an OpenAI chat-completions endpoint.
+
+```ts
+const result = await client.mentor.generateChat(
+  {
+    messages: [{ role: "user", content: "Read the course title." }],
+    tools: [
+      {
+        name: "read_course",
+        description: "Read an authorized course",
+        inputSchema: { type: "object", properties: { courseId: { type: "string" } } },
+      },
+    ],
+    toolChoice: "required",
+    maxOutputTokens: 2500,
+    streamFormat: "events",
+  },
+  { signal },
+);
+// result.toolCalls contains native { id, name, arguments } calls.
+// Execute tools with the application's normal authorization checks, then append
+// assistant toolCalls and role: "tool" / toolCallId messages to the next request.
+```
+
+For streaming, call `client.mentor.streamChat(opts, { signal })` with
+`streamFormat: "events"`. The existing `/api/public/v1/ai/mentor/chat` route returns
+UTF-8 NDJSON records: `text-delta`, complete `tool-call`, `finish`, or a stable
+`error` code. The response body remains the transport's readable stream; callers
+must decode UTF-8 and newline framing incrementally rather than treating each
+network chunk as one JSON event. The SDK does not execute tools or retry a stream.
+Generation uses the existing `/api/public/v1/ai/mentor/chat/generate` route.
+
+Calls omitting tool/event options retain the existing `{ message }` generation
+response and plain-text streaming behavior. `streamChat` already supports request
+cancellation in SDK 0.4.0; the optional generation `signal` parameter is added by
+this release. Model execution, provider availability and fallback policy stay with
+Luma and the consuming application. Deploy the matching Luma native tool-chat
+contract before enabling event-mode callers.
+
+## Native Embeddings
+
+Use the existing AI client to embed text with the API key's configured Custom
+embedding profile:
+
+```ts
+const result = await client.ai.createEmbeddings({
+  texts: ["Customer onboarding policy"],
+  dimensions: 1536,
+});
+// result.embeddings contains the vectors; result.model identifies the profile model.
+```
+
+This calls `POST /api/public/v1/ai/embeddings` with the normal `X-API-Key`
+transport. `dimensions` is optional and must be supported by the configured model.
+Luma validates the returned vector count, dimensions and finite values. The model
+identity comes from the same runtime resolution that produced the vectors.
+Texts-only calls remain valid. Older Luma responses may omit `model`; consumers
+that persist or compare vector spaces must reject missing identity rather than
+assuming a model. Matching dimensions alone do not make embedding spaces compatible.
+
+The public contract is generated from Mentingo AI PR #63. The SDK update adds types
+and transport regressions; published SDK 0.4.0 already forwards these additive body
+and response fields unchanged at runtime. No OpenAI-format embeddings relay is used.
 
 ## Durable Course Authoring
 
