@@ -269,6 +269,16 @@ submit commands, upload source documents, answer authorized context requests, pr
 exports, and record application receipts. Course changes remain reviewable proposals; the SDK
 never applies them to the consuming application's database.
 
+To open an AI authoring session before the course exists, supply an
+`AuthoringDraftCourseContext` to `createSession`. Both `courseId` fields use the
+host's reserved UUID. The context supplies available categories, the actor's
+category creation capability, and an optional tenant palette. The initial
+session language is the UI language. The `course.create` operation in a frozen
+export carries the proposed course language. Apply that operation through the
+host's native permissions and course creation path, then send an applied receipt
+whose `idMappings` maps the draft UUID to the created course ID. Luma retains the
+same authoring session ID.
+
 Snapshot tasks expose optional `failure` metadata with a stable code and recovery action.
 Clients should use `retry_failed_parts`, `answer_question`, `retry_provider`, or `service_fix`
 to present the appropriate next step rather than retrying every failure automatically.

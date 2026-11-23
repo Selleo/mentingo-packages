@@ -971,6 +971,9 @@ export interface AuthoringCommand {
             type: "chapter.update";
           } & ChapterWrite)
         | ({
+            type: "course.create";
+          } & CourseCreateOperation)
+        | ({
             type: "course.metadata.update";
           } & MetadataUpdate)
         | ({
@@ -1469,6 +1472,70 @@ export interface ContinuationRef {
 }
 
 /**
+ * CourseCreateOperation
+ * Create exactly one native course for the session's placeholder identity.
+ */
+export interface CourseCreateOperation {
+  /**
+   * Operationid
+   * @format uuid
+   */
+  operationId: string;
+  /**
+   * Targetid
+   * @format uuid
+   */
+  targetId: string;
+  /** Language */
+  language: "en" | "pl" | "de" | "lt" | "cs" | "es" | "fr";
+  /** Baselinehash */
+  baselineHash?: string | null;
+  /** Dependencies */
+  dependencies?: string[];
+  /** Fieldbaselines */
+  fieldBaselines?: Record<string, string>;
+  /**
+   * Type
+   * @default "course.create"
+   */
+  type?: "course.create";
+  /** Describe the native course proposed during an owner-only draft session. */
+  payload: CourseCreatePayload;
+}
+
+/**
+ * CourseCreatePayload
+ * Describe the native course proposed during an owner-only draft session.
+ */
+export interface CourseCreatePayload {
+  /**
+   * Title
+   * @minLength 1
+   * @maxLength 255
+   */
+  title: string;
+  /**
+   * Description
+   * @minLength 1
+   * @maxLength 20000
+   */
+  description: string;
+  /**
+   * Learningoutcomes
+   * @maxItems 5
+   */
+  learningOutcomes: string[];
+  /** Language */
+  language: "en" | "pl" | "de" | "lt" | "cs" | "es" | "fr";
+  /** Categoryid */
+  categoryId?: string | null;
+  /** Categorytitle */
+  categoryTitle?: string | null;
+  /** Thumbnailassetid */
+  thumbnailAssetId?: string | null;
+}
+
+/**
  * CreateSession
  * Request creation of an authoring session for one course and actor.
  */
@@ -1675,6 +1742,9 @@ export interface FrozenExport {
     | ({
         type: "chapter.update";
       } & ChapterWrite)
+    | ({
+        type: "course.create";
+      } & CourseCreateOperation)
     | ({
         type: "course.metadata.update";
       } & MetadataUpdate)
@@ -2674,6 +2744,11 @@ export interface SessionSnapshot {
    * @default false
    */
   reasoningControlAvailable?: boolean;
+  /**
+   * Pendingwork
+   * @default false
+   */
+  pendingWork?: boolean;
   applicationDelta?: ApplicationDeltaProof;
   /**
    * Schemaversion
