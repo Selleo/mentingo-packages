@@ -1,5 +1,11 @@
 # @mentingo/luma-sdk
 
+## 0.5.0
+
+### Minor Changes
+
+- b1cc184: Expose draft course creation and its application receipt mappings in the authoring SDK.
+
 ## 0.4.1
 
 ### Patch Changes
