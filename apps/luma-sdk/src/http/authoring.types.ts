@@ -14,6 +14,7 @@ import type {
   ContextFailure,
   ContextFailureReceipt,
   ContextResponse,
+  CourseCreatePayload,
   CreateSession,
   Event as GeneratedAuthoringEvent,
   EventPage,
@@ -57,6 +58,9 @@ export type AuthoringLessonCreateOperation = Omit<LessonWriteInput, "type" | "pa
 export type AuthoringLessonUpdateOperation = Omit<LessonWriteInput, "type"> & {
   type: "lesson.update";
 };
+
+/** A standalone creation proposal that targets the draft session's placeholder course ID. */
+export type CourseCreateOperation = Extract<GeneratedAuthoringOperation, { type: "course.create" }>;
 
 export type AuthoringOperation =
   GeneratedNonLessonOperation | AuthoringLessonCreateOperation | AuthoringLessonUpdateOperation;
@@ -106,7 +110,29 @@ export type SessionSnapshot = Omit<GeneratedSessionSnapshot, "tasks"> & {
   tasks: TaskSummary[];
 };
 
-export type AuthoringCreateSessionOptions = CreateSession;
+type AuthoringSessionContextFields = NonNullable<CreateSession["context"]>;
+
+/** A category available for selection in the draft course's language. */
+export type AuthoringDraftCourseCategory = {
+  id: string;
+  title: string;
+  language: CreateSession["language"];
+};
+
+/** Trusted host context for an owner-only session awaiting native course creation. */
+export type AuthoringDraftCourseContext = AuthoringSessionContextFields & {
+  draftCourse: true;
+  courseId: string;
+  language: CreateSession["language"];
+  categories: AuthoringDraftCourseCategory[];
+  canCreateCategory: boolean;
+  tenantPalette?: string[];
+};
+
+/** Open an existing-course session or identify a draft by its placeholder course ID. */
+export type AuthoringCreateSessionOptions = Omit<CreateSession, "context"> & {
+  context?: AuthoringDraftCourseContext | (AuthoringSessionContextFields & { draftCourse?: false });
+};
 export type AuthoringSessionSnapshot = SessionSnapshot;
 export type AuthoringTurnHistoryPage = TurnHistoryPage;
 export type AuthoringSessionSummary = SessionSummary;
@@ -224,6 +250,7 @@ export type {
   ContextFailure,
   ContextFailureReceipt,
   ContextResponse,
+  CourseCreatePayload,
   CreateSession,
   EventPage,
   FrozenExport,

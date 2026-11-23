@@ -3802,6 +3802,9 @@
                       "$ref": "#/components/schemas/MetadataUpdate"
                     },
                     {
+                      "$ref": "#/components/schemas/CourseCreateOperation"
+                    },
+                    {
                       "$ref": "#/components/schemas/SettingsUpdate-Input"
                     },
                     {
@@ -3821,6 +3824,7 @@
                       "chapter.delete": "#/components/schemas/DeleteOperation",
                       "chapter.reorder": "#/components/schemas/ReorderOperation",
                       "chapter.update": "#/components/schemas/ChapterWrite",
+                      "course.create": "#/components/schemas/CourseCreateOperation",
                       "course.metadata.update": "#/components/schemas/MetadataUpdate",
                       "course.settings.update": "#/components/schemas/SettingsUpdate-Input",
                       "lesson.block.replace": "#/components/schemas/BlockReplace",
@@ -4743,6 +4747,166 @@
         "title": "ContinuationRef",
         "description": "Reference an earlier request/proposal without accepting caller-owned context text."
       },
+      "CourseCreateOperation": {
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Operationid"
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Targetid"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "pl",
+              "de",
+              "lt",
+              "cs",
+              "es",
+              "fr"
+            ],
+            "title": "Language"
+          },
+          "baselineHash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baselinehash"
+          },
+          "dependencies": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Dependencies"
+          },
+          "fieldBaselines": {
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "type": "object",
+            "title": "Fieldbaselines"
+          },
+          "type": {
+            "type": "string",
+            "const": "course.create",
+            "title": "Type",
+            "default": "course.create"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CourseCreatePayload"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operationId",
+          "targetId",
+          "language",
+          "payload"
+        ],
+        "title": "CourseCreateOperation",
+        "description": "Create exactly one native course for the session's placeholder identity."
+      },
+      "CourseCreatePayload": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Description"
+          },
+          "learningOutcomes": {
+            "items": {
+              "type": "string",
+              "maxLength": 1000,
+              "minLength": 1
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Learningoutcomes"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "pl",
+              "de",
+              "lt",
+              "cs",
+              "es",
+              "fr"
+            ],
+            "title": "Language"
+          },
+          "categoryId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoryid"
+          },
+          "categoryTitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categorytitle"
+          },
+          "thumbnailAssetId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thumbnailassetid"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "learningOutcomes",
+          "language"
+        ],
+        "title": "CourseCreatePayload",
+        "description": "Describe the native course proposed during an owner-only draft session."
+      },
       "CreateSession": {
         "properties": {
           "commandId": {
@@ -5135,6 +5299,9 @@
                   "$ref": "#/components/schemas/MetadataUpdate"
                 },
                 {
+                  "$ref": "#/components/schemas/CourseCreateOperation"
+                },
+                {
                   "$ref": "#/components/schemas/SettingsUpdate-Output"
                 },
                 {
@@ -5154,6 +5321,7 @@
                   "chapter.delete": "#/components/schemas/DeleteOperation",
                   "chapter.reorder": "#/components/schemas/ReorderOperation",
                   "chapter.update": "#/components/schemas/ChapterWrite",
+                  "course.create": "#/components/schemas/CourseCreateOperation",
                   "course.metadata.update": "#/components/schemas/MetadataUpdate",
                   "course.settings.update": "#/components/schemas/SettingsUpdate-Output",
                   "lesson.block.replace": "#/components/schemas/BlockReplace",
@@ -7427,6 +7595,11 @@
           "reasoningControlAvailable": {
             "type": "boolean",
             "title": "Reasoningcontrolavailable",
+            "default": false
+          },
+          "pendingWork": {
+            "type": "boolean",
+            "title": "Pendingwork",
             "default": false
           },
           "applicationDelta": {

@@ -2,7 +2,9 @@ import { createLumaClient, ReasoningEffort } from "../src/index";
 import type { AuthoringRequest } from "../src/api/generated-api";
 import type {
   AuthoringCommand,
+  AuthoringDraftCourseContext,
   AuthoringOperation,
+  CourseCreateOperation,
   AuthoringContextFulfillmentReceipt,
   AuthoringContextFailure,
   AuthoringContextFailureReceipt,
@@ -25,6 +27,30 @@ const authoringRequest: AuthoringRequest = {
   reasoningEffort: ReasoningEffort.High,
 };
 void authoringRequest;
+
+const draftContext: AuthoringDraftCourseContext = {
+  draftCourse: true,
+  courseId: sessionId,
+  language: "en",
+  categories: [{ id: commandId, title: "Safety", language: "en" }],
+  canCreateCategory: true,
+  tenantPalette: ["#005B4F"],
+};
+void client.authoring.createSession({
+  commandId,
+  courseId: draftContext.courseId,
+  actorId: "author-1",
+  language: draftContext.language,
+  context: draftContext,
+});
+void client.authoring.createSession({
+  commandId,
+  courseId: draftContext.courseId,
+  actorId: "author-1",
+  language: draftContext.language,
+  // @ts-expect-error A draft requires the host's category options and permission.
+  context: { draftCourse: true, courseId: draftContext.courseId, language: draftContext.language },
+});
 
 const command: AuthoringCommand = {
   commandId,
@@ -78,13 +104,23 @@ void snapshotPromise.then((snapshot) => {
   void appliedIds;
   void appliedMappings;
   void snapshot.courseId;
+  const pendingWork: boolean | undefined = snapshot.pendingWork;
+  void pendingWork;
   const reasoningControlAvailable: boolean | undefined = snapshot.reasoningControlAvailable;
   void reasoningControlAvailable;
   void partKind;
   void toolSourceCount;
 });
 void eventsPromise;
-void exportPromise;
+void exportPromise.then(({ operations }) => {
+  for (const operation of operations) {
+    if (operation.type === "course.create") {
+      const creation: CourseCreateOperation = operation;
+      const outcomes: string[] = creation.payload.learningOutcomes;
+      void outcomes;
+    }
+  }
+});
 
 declare const selectedContext: AuthoringContextResponse;
 const fulfillmentPromise: Promise<AuthoringContextFulfillmentReceipt> =

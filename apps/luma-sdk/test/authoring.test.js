@@ -636,6 +636,72 @@ test("authoring export methods use frozen export endpoints", async () => {
   );
 });
 
+test("draft course context, frozen operation, and applied ID mapping retain wire values", async () => {
+  const createdCourseId = "00000000-0000-4000-8000-000000000020";
+  const createRequest = {
+    commandId: COMMAND_ID,
+    actorId: "author-1",
+    courseId: COURSE_ID,
+    language: "en",
+    context: {
+      draftCourse: true,
+      courseId: COURSE_ID,
+      language: "en",
+      categories: [{ id: COMMAND_ID, title: "Bezpieczeństwo", language: "pl" }],
+      canCreateCategory: false,
+      tenantPalette: ["#005B4F"],
+    },
+  };
+  const creationExport = {
+    ...frozenExport,
+    language: "pl",
+    operations: [
+      {
+        type: "course.create",
+        operationId: COMMAND_ID,
+        targetId: COURSE_ID,
+        language: "pl",
+        payload: {
+          title: "Bezpieczeństwo",
+          description: "Jak bezpiecznie reagować na zgłoszenia",
+          learningOutcomes: ["Rozpoznasz sytuacje wymagające reakcji"],
+          language: "pl",
+          categoryId: COMMAND_ID,
+        },
+      },
+    ],
+  };
+  const receipt = {
+    courseId: COURSE_ID,
+    sessionId: SESSION_ID,
+    applicationId: APPLICATION_ID,
+    exportId: EXPORT_ID,
+    exportHash: HASH,
+    status: "applied",
+    idMappings: { [COURSE_ID]: createdCourseId },
+  };
+
+  await withRecorder(
+    ({ path }) => {
+      if (path.endsWith("/exports/" + EXPORT_ID)) return { body: creationExport };
+      if (path.endsWith("/receipts")) return { body: receipt };
+      return { body: { ...snapshot, pendingWork: true } };
+    },
+    async ({ baseURL, requests }) => {
+      const { authoring } = createClient(baseURL);
+      const draft = await authoring.createSession(createRequest);
+      assert.equal(draft.pendingWork, true);
+      const exported = await authoring.getExport({ sessionId: SESSION_ID, exportId: EXPORT_ID });
+      const applied = await authoring.recordReceipt({ sessionId: SESSION_ID, receipt });
+
+      assert.deepEqual(requests[0].body, createRequest);
+      assert.deepEqual(exported, creationExport);
+      assert.deepEqual(requests[2].body, receipt);
+      assert.deepEqual(applied, receipt);
+    },
+  );
+});
+
 test("authoring receipt is returned and sent unchanged", async () => {
   const receipt = {
     courseId: COURSE_ID,
