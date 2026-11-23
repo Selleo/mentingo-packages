@@ -63,9 +63,7 @@ export type AuthoringLessonUpdateOperation = Omit<LessonWriteInput, "type"> & {
 export type CourseCreateOperation = Extract<GeneratedAuthoringOperation, { type: "course.create" }>;
 
 export type AuthoringOperation =
-  | GeneratedNonLessonOperation
-  | AuthoringLessonCreateOperation
-  | AuthoringLessonUpdateOperation;
+  GeneratedNonLessonOperation | AuthoringLessonCreateOperation | AuthoringLessonUpdateOperation;
 
 /**
  * Public command input. It narrows mentor lesson creation so a judge configuration
@@ -76,12 +74,7 @@ export type AuthoringCommand = Omit<GeneratedAuthoringCommand, "operations"> & {
 };
 
 export type AuthoringWorkProgressStage =
-  | "outline"
-  | "lesson_planning"
-  | "lesson_generation"
-  | "validation"
-  | "repairing"
-  | "recovering";
+  "outline" | "lesson_planning" | "lesson_generation" | "validation" | "repairing" | "recovering";
 
 export type AuthoringWorkProgressChapter = {
   chapterId: string;
