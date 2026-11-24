@@ -2902,9 +2902,21 @@
             "title": "Model"
           },
           "metadata": {
-            "additionalProperties": true,
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
             "type": "object",
             "title": "Metadata"
+          },
+          "voiceSettings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "hasApiKey": {
             "type": "boolean",
@@ -3001,12 +3013,50 @@
         ],
         "title": "ApiKeyCreateResponse"
       },
-      "ApiKeyMetadata": {
+      "ApiKeyMetadata-Input": {
         "properties": {
           "textToSpeechProvider": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/TextToSpeechProvider"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "providerVoiceSettings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderVoiceSettingsMap-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "ApiKeyMetadata",
+        "description": "Extensible non-secret API key settings; recognized routing values are validated."
+      },
+      "ApiKeyMetadata-Output": {
+        "properties": {
+          "textToSpeechProvider": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextToSpeechProvider"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "providerVoiceSettings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderVoiceSettingsMap-Output"
               },
               {
                 "type": "null"
@@ -3069,7 +3119,7 @@
             "title": "Revokedat"
           },
           "metadata": {
-            "$ref": "#/components/schemas/ApiKeyMetadata"
+            "$ref": "#/components/schemas/ApiKeyMetadata-Output"
           },
           "effectiveTextToSpeechProvider": {
             "anyOf": [
@@ -3185,7 +3235,7 @@
           "metadata": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ApiKeyMetadata"
+                "$ref": "#/components/schemas/ApiKeyMetadata-Input"
               },
               {
                 "type": "null"
@@ -3570,7 +3620,8 @@
             "type": "string",
             "enum": [
               "visual",
-              "mentor_context"
+              "mentor_context",
+              "podcast"
             ],
             "title": "Role",
             "default": "visual"
@@ -5535,6 +5586,70 @@
         ],
         "title": "JudgeTriggeredBlockingError"
       },
+      "LanguageVoiceSettings": {
+        "properties": {
+          "femaleVoiceId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderVoiceId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maleVoiceId": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderVoiceId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "podcastFemaleVoiceIds": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderVoiceId"
+            },
+            "type": "array",
+            "maxItems": 32,
+            "title": "Podcastfemalevoiceids"
+          },
+          "podcastMaleVoiceIds": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderVoiceId"
+            },
+            "type": "array",
+            "maxItems": 32,
+            "title": "Podcastmalevoiceids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LanguageVoiceSettings",
+        "description": "Voice IDs understood by one provider for one normalized language code."
+      },
+      "LanguageVoiceSettingsMap-Input": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/LanguageVoiceSettings"
+        },
+        "propertyNames": {
+          "$ref": "#/components/schemas/VoiceLanguageCode"
+        },
+        "type": "object",
+        "maxProperties": 64
+      },
+      "LanguageVoiceSettingsMap-Output": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/LanguageVoiceSettings"
+        },
+        "propertyNames": {
+          "$ref": "#/components/schemas/VoiceLanguageCode"
+        },
+        "type": "object",
+        "maxProperties": 64
+      },
       "LessonImageInsert": {
         "properties": {
           "operationId": {
@@ -7024,6 +7139,87 @@
         ],
         "title": "ProposalReviewDecision",
         "description": "Accept or reject one exact proposal revision within an atomic review command."
+      },
+      "ProviderVoiceId": {
+        "type": "string",
+        "maxLength": 256,
+        "minLength": 1
+      },
+      "ProviderVoiceSettingsMap-Input": {
+        "properties": {
+          "cartesia": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "elevenlabs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fish": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProviderVoiceSettingsMap",
+        "description": "Keep independently editable language settings for each built-in provider."
+      },
+      "ProviderVoiceSettingsMap-Output": {
+        "properties": {
+          "cartesia": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "elevenlabs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fish": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LanguageVoiceSettingsMap-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProviderVoiceSettingsMap",
+        "description": "Keep independently editable language settings for each built-in provider."
       },
       "PublicAiMessage": {
         "properties": {
@@ -8933,6 +9129,10 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VoiceLanguageCode": {
+        "type": "string",
+        "pattern": "^[a-z]{2,3}(-[a-z]{2})?$"
       },
       "WorkspaceRecord": {
         "properties": {

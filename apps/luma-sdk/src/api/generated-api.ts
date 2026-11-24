@@ -576,7 +576,8 @@ export interface AiModelProfileResponse {
   /** Model */
   model: string;
   /** Metadata */
-  metadata: Record<string, any>;
+  metadata: Record<string, JsonValue>;
+  voiceSettings?: LanguageVoiceSettingsMapOutput | null;
   /** Hasapikey */
   hasApiKey: boolean;
   /**
@@ -625,8 +626,19 @@ export interface ApiKeyCreateResponse {
  * ApiKeyMetadata
  * Extensible non-secret API key settings; recognized routing values are validated.
  */
-export interface ApiKeyMetadata {
+export interface ApiKeyMetadataInput {
   textToSpeechProvider?: TextToSpeechProvider | null;
+  providerVoiceSettings?: ProviderVoiceSettingsMapInput | null;
+  [key: string]: any;
+}
+
+/**
+ * ApiKeyMetadata
+ * Extensible non-secret API key settings; recognized routing values are validated.
+ */
+export interface ApiKeyMetadataOutput {
+  textToSpeechProvider?: TextToSpeechProvider | null;
+  providerVoiceSettings?: ProviderVoiceSettingsMapOutput | null;
   [key: string]: any;
 }
 
@@ -656,7 +668,7 @@ export interface ApiKeyResponse {
   /** Revokedat */
   revokedAt?: string | null;
   /** Extensible non-secret API key settings; recognized routing values are validated. */
-  metadata?: ApiKeyMetadata;
+  metadata?: ApiKeyMetadataOutput;
   /** Provider used for voice output: the chosen one, else the platform default. */
   effectiveTextToSpeechProvider?: TTSProvider | null;
   /**
@@ -700,7 +712,7 @@ export interface ApiKeyUpdateRequest {
    */
   textToSpeechApiKey?: string | null;
   /** Merge non-secret settings. Null values remove individual metadata entries. */
-  metadata?: ApiKeyMetadata | null;
+  metadata?: ApiKeyMetadataInput | null;
 }
 
 /** ApplicationDeltaProof */
@@ -870,7 +882,7 @@ export interface AssetManifestItem {
    * Role
    * @default "visual"
    */
-  role?: "visual" | "mentor_context";
+  role?: "visual" | "mentor_context" | "podcast";
   /** Sourceversionid */
   sourceVersionId?: string | null;
   /** Sectionids */
@@ -1868,6 +1880,35 @@ export interface JudgeTriggeredBlockingError {
 }
 
 /**
+ * LanguageVoiceSettings
+ * Voice IDs understood by one provider for one normalized language code.
+ */
+export interface LanguageVoiceSettings {
+  femaleVoiceId?: ProviderVoiceId | null;
+  maleVoiceId?: ProviderVoiceId | null;
+  /**
+   * Podcastfemalevoiceids
+   * @maxItems 32
+   */
+  podcastFemaleVoiceIds?: ProviderVoiceId[];
+  /**
+   * Podcastmalevoiceids
+   * @maxItems 32
+   */
+  podcastMaleVoiceIds?: ProviderVoiceId[];
+}
+
+export type LanguageVoiceSettingsMapInput = Record<
+  VoiceLanguageCode,
+  LanguageVoiceSettings
+>;
+
+export type LanguageVoiceSettingsMapOutput = Record<
+  VoiceLanguageCode,
+  LanguageVoiceSettings
+>;
+
+/**
  * LessonImageInsert
  * Insert an image beside a trusted existing block under the whole-lesson baseline.
  */
@@ -2485,6 +2526,32 @@ export interface ProposalReviewDecision {
    * @default false
    */
   acceptQualityConcerns?: boolean;
+}
+
+/**
+ * @minLength 1
+ * @maxLength 256
+ */
+export type ProviderVoiceId = string;
+
+/**
+ * ProviderVoiceSettingsMap
+ * Keep independently editable language settings for each built-in provider.
+ */
+export interface ProviderVoiceSettingsMapInput {
+  cartesia?: LanguageVoiceSettingsMapInput | null;
+  elevenlabs?: LanguageVoiceSettingsMapInput | null;
+  fish?: LanguageVoiceSettingsMapInput | null;
+}
+
+/**
+ * ProviderVoiceSettingsMap
+ * Keep independently editable language settings for each built-in provider.
+ */
+export interface ProviderVoiceSettingsMapOutput {
+  cartesia?: LanguageVoiceSettingsMapOutput | null;
+  elevenlabs?: LanguageVoiceSettingsMapOutput | null;
+  fish?: LanguageVoiceSettingsMapOutput | null;
 }
 
 /**
@@ -3268,6 +3335,9 @@ export interface ValidationError {
   /** Context */
   ctx?: object;
 }
+
+/** @pattern ^[a-z]{2,3}(-[a-z]{2})?$ */
+export type VoiceLanguageCode = string;
 
 /**
  * WorkspaceRecord
@@ -4069,7 +4139,7 @@ export class API<
       },
       params: RequestParams = {},
     ) =>
-      this.request<string, HTTPValidationError>({
+      this.request<ProviderVoiceId, HTTPValidationError>({
         path: `/api/public/v1/authoring/sessions/${sessionId}/events/stream`,
         method: "GET",
         query: query,
