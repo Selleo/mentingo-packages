@@ -10,11 +10,11 @@ It provides two separate clients:
 ## Installation
 
 ```bash
-pnpm add @mentingo/luma-sdk@0.5.0
+pnpm add @mentingo/luma-sdk@0.6.0
 # or
-npm install @mentingo/luma-sdk@0.5.0
+npm install @mentingo/luma-sdk@0.6.0
 # or
-yarn add @mentingo/luma-sdk@0.5.0
+yarn add @mentingo/luma-sdk@0.6.0
 ```
 
 ## Quick Start (HTTP)
