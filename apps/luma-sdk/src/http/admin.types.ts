@@ -37,7 +37,7 @@ export type AdminApiKeyAssignmentUpdateOptions = AdminApiKeyIdentifierOptions &
 
 export type { LumaAiModelDomain, LumaAiModelProfileKind } from "./admin.constants";
 
-export type { ApiKeyMetadata } from "../api/generated-api";
+export type { ApiKeyMetadataInput as ApiKeyMetadata } from "../api/generated-api";
 
 export type {
   AiModelAssignmentResponse,

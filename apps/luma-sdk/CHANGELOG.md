@@ -1,5 +1,11 @@
 # @mentingo/luma-sdk
 
+## 0.6.0
+
+### Minor Changes
+
+- 3c2394d: Expose ready lesson podcast manifests and provider-scoped voice settings.
+
 ## 0.5.0
 
 ### Minor Changes
